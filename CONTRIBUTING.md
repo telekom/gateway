@@ -74,3 +74,4 @@ If a file format does not support comments, add an annotation to [`REUSE.toml`](
 | --- | --- |
 | Source code and configuration with substance | `Apache-2.0` |
 | Small repository configuration files, such as `.gitignore` | `CC0-1.0` |
+| Documentation in `docs/` | `CC-BY-4.0`, set in `REUSE.toml`. These files need no SPDX header. |

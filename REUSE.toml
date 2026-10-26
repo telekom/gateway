@@ -7,3 +7,9 @@ version = 1
 SPDX-PackageName = "gateway"
 SPDX-PackageSupplier = "Deutsche Telekom AG <opensource@telekom.de>"
 SPDX-PackageDownloadLocation = "https://github.com/telekom/gateway"
+
+[[annotations]]
+path = "docs/**"
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Deutsche Telekom AG"
+SPDX-License-Identifier = "CC-BY-4.0"
