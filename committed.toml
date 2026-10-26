@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# Conventional Commits policy for the commit-msg hook in lefthook.yml.
+# Docs: https://github.com/crate-ci/committed
+style = "conventional"
+
+allowed_types = [
+  "feat",
+  "fix",
+  "build",
+  "chore",
+  "ci",
+  "docs",
+  "perf",
+  "refactor",
+  "revert",
+  "style",
+  "test",
+]
+
+# Keep subjects short enough that GitHub does not truncate them.
+subject_length = 72
+# Allow long body lines, for example URLs.
+line_length = 0
+subject_capitalized = false
+# Allow `git commit --fixup` locally. Squash fixups before merge.
+no_fixup = false

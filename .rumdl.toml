@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# Markdown lint and format configuration.
+# Docs: https://rumdl.dev/configuration/
+
+[global]
+line-length = 120
+exclude = [
+    # Third-party text, kept as published.
+    "CODE_OF_CONDUCT.md",
+]
+
+# Wrap paragraphs at the line length and remove manual line breaks.
+[MD013]
+reflow = true
+reflow-mode = "normalize"
