@@ -16,6 +16,15 @@ For the repositories of the current gateway, see the
 
 Each component gets its own top-level directory when we add it.
 
+## Documentation and decisions
+
+- Technical and operator documentation goes to `docs/`.
+- Decision records are in `docs/decisions/`. Read `docs/decisions/README.md` before you add or change a record. Check
+  the existing records before you change something that a decision covers.
+- Write decision records for internal contributors first. Internal terms and links to internal sources, such as issues
+  or wiki pages, are allowed if their content cannot be exposed to the public and they add additional clarity to a
+  record.
+
 ## Checks
 
 Use the Makefile targets. Run `make help` to see them.
@@ -27,7 +36,8 @@ make check   # all repository checks
 ## Conventions
 
 - **License headers:** every file must carry a REUSE-compliant SPDX header. CI verifies this. If a file format does not
-  support comments, add an annotation to `REUSE.toml`. See the licensing table in `CONTRIBUTING.md`.
+  support comments, add an annotation to `REUSE.toml`. Files in `docs/` need no header, because `REUSE.toml` licenses
+  them. See the licensing table in `CONTRIBUTING.md`.
 
   ```text
   SPDX-FileCopyrightText: 2026 Deutsche Telekom AG

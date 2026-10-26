@@ -18,6 +18,12 @@ An API gateway for the
 This is a monorepo. It holds all components of the gateway and their documentation. Each component gets its own
 top-level directory when we add it.
 
+```text
+.
+└── docs/            Technical and operator documentation
+    └── decisions/   Decision records
+```
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
