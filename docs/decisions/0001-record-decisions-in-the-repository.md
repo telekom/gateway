@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 decision-makers:
   - niklas.beilmann@telekom.de
   - christian.ingenhaag@telekom.de
