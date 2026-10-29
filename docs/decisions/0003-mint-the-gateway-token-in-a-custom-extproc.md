@@ -71,8 +71,11 @@ Do we use an existing open-source component to mint the Gateway Token, or do we 
 Chosen option: "Custom ExtProc in Go", because it is the only option that meets all decision drivers.
 
 Heimdall is the best existing alternative. It meets the functional requirements, but it is weak on customizability,
-realm handling and open-source posture. See
-[Pros and Cons of the Options](#pros-and-cons-of-the-options).
+realm handling and open-source posture.
+
+Authorino does not meet the functional requirements. It cannot load the rotator keys, it does not reload a changed key,
+and it lets the request through when signing fails. It would need four upstream changes, and their acceptance and timing
+are out of our control. See [Pros and Cons of the Options](#pros-and-cons-of-the-options).
 
 ### Consequences
 
@@ -107,6 +110,14 @@ client -> jwt (AuthN) -> rbac (AuthZ) -> ext_proc (Gateway Token) -> router
 8. Logs contain the `kid` and the claim names, never tokens or keys.
 
 A separate decision covers how we deploy the ExtProc (sidecar or own deployment).
+
+### Filter order of ext_authz components
+
+Heimdall and Authorino are ext_authz services. kgateway runs ext_authz in the AuthN stage. In one stage, kgateway sorts
+the filters by name, so `ext_auth/…` runs before `jwt/…`. An ext_authz component therefore cannot use the result of
+`jwt` and `rbac`. The kgateway maintainers keep ext_authz in the AuthN stage and make the stage configurable only for
+ExtProc ([discussion #13808](https://github.com/kgateway-dev/kgateway/discussions/13808)). An ext_authz component must
+validate the consumer token and check consumer access itself, and it replaces `jwt` and `rbac` on LMS routes.
 
 ### Heimdall
 
@@ -169,6 +180,59 @@ of the two ways to match the Issuer Service JWKS needs a change to Heimdall:
   signs with a wrong key ID for up to two rotations. If the rotator recalculates all key IDs at once instead, the new
   key IDs are not published in advance, and validation fails for a short time.
 
+### Authorino
+
+Authorino runs as its own deployment, managed by its operator. Envoy calls it through ext_authz, as it calls Heimdall.
+The control plane writes one `AuthConfig` per route. The `TrafficPolicy` of the route sets the ext_authz context
+extension `host`, and Authorino uses it to select the AuthConfig.
+
+The AuthConfig validates the consumer token, checks consumer access and mints the token as a "Festival Wristband". A
+second response item runs after it and writes the wristband into `Authorization`. The wristband `issuer` is a string in
+each AuthConfig, so the control plane sets the realm per route. Untested sketch:
+
+```yaml
+spec:
+  hosts: [route-a] # selected through the ext_authz context extension "host"
+  authentication:
+    consumer:
+      jwt: { issuerUrl: <consumer token issuer> }
+  authorization:
+    consumer-access:
+      patternMatching:
+        patterns:
+          - predicate: "auth.identity.azp in ['client-a']"
+  response:
+    success:
+      dynamicMetadata:
+        lms:
+          wristband:
+            issuer: <issuer URL of realm-a>
+            signingKeyRefs: [{ name: <Secret name>, algorithm: RS256 }]
+            customClaims:
+              env: { value: realm-a }
+              iat: { selector: auth.identity.iat }
+              exp: { selector: auth.identity.exp }
+      headers:
+        authorization:
+          priority: 1 # runs after the wristband
+          plain: { expression: "'Bearer ' + auth.response.lms" }
+```
+
+To use Authorino, we would need these upstream changes:
+
+1. Accept PKCS#8 keys. The rotator writes PKCS#8 keys, and Authorino loads only PKCS#1 and SEC1 keys.
+2. Read the key and the key ID from configurable fields of a Secret. Authorino reads `key.pem` and uses the Secret name
+   as the key ID.
+3. Reload a signing key when its Secret changes. Authorino reads keys only when it reconciles an AuthConfig.
+4. Reject the request when a response item fails. Authorino logs the error and allows the request.
+
+No upstream issue or pull request exists for these changes (as of 2026-10-27). Changes 2 and 4 change the AuthConfig
+API. They need agreement with the maintainers and a release of authorino-operator.
+
+Our looser key ID requirement does not remove changes 2 and 3. The rotator could write one Secret per key, named after
+its key ID. But each rotation would then have to update the `signingKeyRefs` of every AuthConfig, because Authorino does
+not reload Secrets.
+
 ## Pros and Cons of the Options
 
 ### Custom ExtProc in Go
@@ -209,10 +273,25 @@ of the two ways to match the Issuer Service JWKS needs a change to Heimdall:
 
 ### Authorino
 
-- Bad, because the key ID is the name of the Kubernetes Secret. The rotator puts each new key into the same Secret, so
-  the key ID does not change when the key changes.
-- Bad, because the key must be in `key.pem`. This does not match the rotator Secret.
-- Bad, because it does not reload the signing Secret when it changes.
+- Good, because it is an existing component (Apache-2.0) of the Kuadrant project with regular releases. Several people
+  contribute regularly (as of 2026-10-29: the top three contributors have 938, 110 and 79 commits; about 270 stars and
+  56 forks).
+- Good, because the control plane can configure it per route with an `AuthConfig` CRD.
+- Good, because custom claims can override all standard claims, including `iat`, `exp` and `sub`.
+- Good, because the issuer is a string in each AuthConfig. The control plane can set the realm per route, without a
+  change to the static configuration.
+- Bad, because it fails open. If signing or a claim expression fails, Authorino logs the error and allows the request.
+  The consumer token then reaches the provider.
+- Bad, because it cannot load the rotator keys. It accepts only PKCS#1 and SEC1 keys, and the rotator writes PKCS#8.
+- Bad, because the key ID is the name of the Kubernetes Secret, and the key must be in `key.pem`. The rotator puts each
+  new key into the same Secret, so the key ID does not change when the key changes.
+- Bad, because it signs only with the first key in `signingKeyRefs`.
+- Bad, because it does not reload the signing Secret when it changes. If a referenced Secret is missing when an
+  AuthConfig is reconciled again, all Authorino replicas can crash
+  ([#674](https://github.com/Kuadrant/authorino/issues/674), fix not merged as of 2026-10-29).
+- Bad, because a claim whose selector finds no value is sent as `null`. gateway-jumper leaves such claims out.
+- Bad, because all authentication and authorization of LMS routes depends on Authorino, not only the minting.
+- Bad, because it is one more deployment, an operator and a CRD to operate.
 
 ## More Information
 
@@ -220,7 +299,10 @@ Versions used for the evaluation: kgateway v2.4.7 (`main` at `643f50b`), Heimdal
 Authorino `main` at `448d295`.
 
 - kgateway:
-  [ExtProc `filterStage`](https://github.com/kgateway-dev/kgateway/blob/643f50b3d0084097a2f4d5e3ec3add78cde702e1/pkg/kgateway/extensions2/plugins/trafficpolicy/extproc_policy.go#L222-L258)
+  [ext_authz in AuthN](https://github.com/kgateway-dev/kgateway/blob/643f50b3d0084097a2f4d5e3ec3add78cde702e1/pkg/kgateway/extensions2/plugins/trafficpolicy/extauth_policy.go#L199),
+  [sort by name in a stage](https://github.com/kgateway-dev/kgateway/blob/643f50b3d0084097a2f4d5e3ec3add78cde702e1/pkg/pluginsdk/filters/stages.go#L107),
+  [ExtProc `filterStage`](https://github.com/kgateway-dev/kgateway/blob/643f50b3d0084097a2f4d5e3ec3add78cde702e1/pkg/kgateway/extensions2/plugins/trafficpolicy/extproc_policy.go#L222-L258),
+  [discussion #13808 on filter ordering](https://github.com/kgateway-dev/kgateway/discussions/13808)
 - Heimdall:
   [standard claims set by the signer](https://github.com/dadrus/heimdall/blob/d397dd5d20f868fd95cbed5b507afd97e45475c2/internal/rules/mechanisms/finalizers/jwt_signer.go#L106-L111),
   [finalizer fields that rules cannot override](https://github.com/dadrus/heimdall/blob/d397dd5d20f868fd95cbed5b507afd97e45475c2/internal/rules/mechanisms/finalizers/jwt_finalizer.go#L195-L196),
@@ -232,5 +314,13 @@ Authorino `main` at `448d295`.
   [static and dynamic configuration](https://github.com/dadrus/heimdall/blob/d397dd5d20f868fd95cbed5b507afd97e45475c2/docs/content/docs/operations/configuration.adoc),
   [MAINTAINERS.md](https://github.com/dadrus/heimdall/blob/d397dd5d20f868fd95cbed5b507afd97e45475c2/MAINTAINERS.md),
   [ADOPTERS.md](https://github.com/dadrus/heimdall/blob/d397dd5d20f868fd95cbed5b507afd97e45475c2/ADOPTERS.md)
+- Authorino:
+  [Festival Wristband tokens](https://github.com/Kuadrant/authorino/blob/448d295/docs/features.md#festival-wristband-tokens-responsesuccessheadersdynamicmetadatawristband),
+  [accepted key types](https://github.com/Kuadrant/authorino/blob/448d295/pkg/evaluators/response/wristband.go#L34-L50),
+  [claims and first signing key](https://github.com/Kuadrant/authorino/blob/448d295/pkg/evaluators/response/wristband.go#L111-L133),
+  [`key.pem` and Secret name as key ID](https://github.com/Kuadrant/authorino/blob/448d295/controllers/auth_config_controller.go#L923-L941),
+  [controller watches only AuthConfigs](https://github.com/Kuadrant/authorino/blob/448d295/controllers/auth_config_controller.go#L1161),
+  [failed response items are only logged](https://github.com/Kuadrant/authorino/blob/448d295/pkg/service/auth_pipeline.go#L329-L354),
+  [issue #674](https://github.com/Kuadrant/authorino/issues/674)
 - Realm and per-route data in the current gateway: `gateway/internal/features/feature/last_mile_security.go` in the
   [control plane](https://github.com/telekom/controlplane) sets the `realm` and `api_base_path` headers per route.
