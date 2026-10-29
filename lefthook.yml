@@ -15,7 +15,7 @@ pre-commit:
   parallel: true
   jobs:
     - name: reuse
-      run: make reuse
+      run: reuse lint-file {staged_files}
       fail_text: "REUSE/SPDX validation failed (requires REUSE 6+; see CONTRIBUTING.md)."
 
     - name: gitleaks
