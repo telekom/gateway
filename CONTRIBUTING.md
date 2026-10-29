@@ -48,8 +48,11 @@ make hooks
 
 | Hook | Checks |
 | --- | --- |
-| `pre-commit` | Check REUSE compliance of the repository, scan staged content with Gitleaks and lint staged Markdown files with rumdl. The jobs run in parallel. The hooks do not change files. |
+| `pre-commit` | Check REUSE compliance of staged files, scan staged content with Gitleaks and lint staged Markdown files with rumdl. The jobs run in parallel. The hooks do not change files. |
 | `commit-msg` | Validate Conventional Commits with `committed`, except during merges and rebases. |
+
+The REUSE hook runs `reuse lint-file` on staged paths, using their working-tree contents. `make reuse` and `make check`
+still check REUSE compliance of the complete repository.
 
 To bypass the hooks for one command, set `LEFTHOOK=0` or use `--no-verify`. CI still runs its required checks.
 

@@ -20,8 +20,7 @@ top-level directory when we add it.
 
 ```text
 .
-└── docs/            Technical and operator documentation
-    └── decisions/   Decision records
+└── docs/   Documentation and decision records, see docs/README.md
 ```
 
 ## Contributing

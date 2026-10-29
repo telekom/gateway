@@ -76,6 +76,9 @@ Keep records short. People must actually read them, and agents must still get en
 decision, the options and the reasons, and nothing more. Remove optional sections of the template that add nothing to
 the record. Do not fill sections just because the template has them.
 
+Put diagrams (mermaid codeblocks) that explain proposed alternatives into the record. The accepted solution gets a
+diagram of only the decided flow in its [`developer guide`](../developer/). They should link to each other.
+
 Write each record for the team and other internal contributors first. Make the decision and its reasons clear to them.
 Use internal terms and link to internal sources, such as issues or wiki pages, when this makes the record clearer.
 

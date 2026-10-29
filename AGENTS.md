@@ -18,12 +18,8 @@ Each component gets its own top-level directory when we add it.
 
 ## Documentation and decisions
 
-- Technical and operator documentation goes to `docs/`.
-- Decision records are in `docs/decisions/`. Read `docs/decisions/README.md` before you add or change a record. Check
-  the existing records before you change something that a decision covers.
-- Write decision records for internal contributors first. Internal terms and links to internal sources, such as issues
-  or wiki pages, are allowed if their content cannot be exposed to the public and they add additional clarity to a
-  record.
+Documentation and decision records are in `docs/`. Before you add, move or change anything in `docs/`, or change
+something that a decision covers, read `docs/AGENTS.md`.
 
 ## Checks
 
