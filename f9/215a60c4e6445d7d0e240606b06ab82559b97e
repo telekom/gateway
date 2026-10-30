@@ -1,0 +1,43 @@
+docs/decisions/0004-use-an-oauth-proxy-for-cross-cluster-configuration.md
+  s_328ffa27f9f9f9::t_25181877cfa435 1-179
+docs/diagrams/route-configuration-flow.html
+  s_15f2ba98a4f4bd::t_d0fb301a51f019 1-122,124-137,140-170,172-189,191-202,205-215,217-247,249-250,252-260,264-266,268-306,308,310-390,395-407,409-472,474-482,485-504,506-510,512-515
+  s_328ffa27f9f9f9::t_25181877cfa435 204,309,408,505,511
+  s_328ffa27f9f9f9::t_3af5696aee47af 123,216,248,251,262-263,267,307
+  s_328ffa27f9f9f9::t_a2f4435cde0d8d 138-139,171,190,203,261,473,483-484
+  s_15f2ba98a4f4bd::t_f288425f67fbc5 391-394
+docs/README.md
+  s_328ffa27f9f9f9::t_25181877cfa435 8-9
+  s_328ffa27f9f9f9::t_f532fb130b50e2 10
+docs/decisions/0005-reuse-an-existing-kubernetes-api-proxy.md
+  s_328ffa27f9f9f9::t_25181877cfa435 1-194
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.6",
+  "base_commit_sha": "f9215a60c4e6445d7d0e240606b06ab82559b97e",
+  "prompts": {},
+  "humans": {
+    "h_052be7cb63ce69": {
+      "author": "Niklas Beilmann <niklas.beilmann@telekom.de>"
+    }
+  },
+  "sessions": {
+    "s_15f2ba98a4f4bd": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e781a32b2ffeNRg1OCi3VEPR8k",
+        "model": "github-copilot/gpt-6-astra-long"
+      },
+      "human_author": null
+    },
+    "s_328ffa27f9f9f9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e7e14153cffeebVSEtHTMpC8dq",
+        "model": "github-copilot/gpt-6-astra-long"
+      },
+      "human_author": null
+    }
+  }
+}
