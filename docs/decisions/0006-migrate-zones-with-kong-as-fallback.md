@@ -51,6 +51,14 @@ After the move of the entry point, kgateway receives all traffic of the zone. A 
 migrated route, it creates an `HTTPRoute` with a more specific path in kgateway. In Gateway API, the more specific path
 has precedence. So kgateway sends these requests directly to the provider. All other requests go through Kong as before.
 
+```mermaid
+flowchart LR
+    consumer[Consumer] --> kgateway[kgateway]
+    kgateway -- "migrated route" --> provider[Provider]
+    kgateway -- "fallback route (PathPrefix /)" --> kong[Kong]
+    kong --> provider
+```
+
 ### Consequences
 
 - Good, because consumers and providers see no change.
@@ -167,6 +175,41 @@ only for routes whose features kgateway supports. We have three ideas:
 For a rollback of the whole zone, the control plane puts all routes into test mode (test header) or removes them
 (selected test routes, create on switch).
 
+### Configuration flow in the control plane
+
+Today, the `api-operator` reads the presets and features of the zone and creates a `Route` for each `ApiExposure`. The
+`gateway-operator` writes the `Route` to Kong through the Kong admin API. Subscriptions take the same path: a
+`ConsumeRoute` triggers a new reconciliation of its `Route`. The dashed parts are new.
+
+```mermaid
+flowchart LR
+    exposure[ApiExposure] --> apiop[api-operator]
+    apiop -- reads --> zone[Zone presets and features]
+    apiop -- creates --> route[Route]
+    route --> gwop[gateway-operator]
+    gwop -. reads .-> zone
+    gwop -- "Kong admin API" --> kong[Kong]
+    gwop -. "Kubernetes API proxy" .-> kgw["kgateway resources (HTTPRoute, policies)"]
+```
+
+For each `Route`, the `gateway-operator` decides which gateways to configure. The diagram uses the test header idea.
+With the other ideas, the `gateway-operator` creates no kgateway resources while the switch is off, or only for the
+selected test routes.
+
+```mermaid
+flowchart TD
+    start([Route changed]) --> kongq{"Zone configures Kong?"}
+    kongq -- yes --> kongcfg[Configure the route in Kong]
+    kongq -- no --> kgwq
+    kongcfg --> kgwq{"Zone configures kgateway?"}
+    kgwq -- no --> done([Done])
+    kgwq -- yes --> supported{"kgateway supports all features of the route?"}
+    supported -- no --> fallback(["No kgateway resources: requests use the fallback route to Kong"])
+    supported -- yes --> switch{"Zone-wide flag and per-route switch on?"}
+    switch -- no --> test["Create kgateway resources in test mode (with header match)"]
+    switch -- yes --> live["Create kgateway resources live (without header match)"]
+```
+
 ### Zone configuration
 
 This sketch is only an idea. We will change the control plane to support the new gateway and decide the API there.
@@ -273,4 +316,6 @@ Open: how does kgateway fill `X-Forwarded-For`, for example does it append to an
   [`trusted_ips` and `real_ip_header`](https://developer.konghq.com/gateway/configuration/),
   [client IP values of the Kong chart](https://github.com/telekom/gateway-kong-charts/blob/43716eb/templates/_kong.tpl#L391-L398)
 - Control plane: exact base path check in `api/internal/handler/api/handler.go`, zone and preset API in
-  [`admin/api/v1/zone_types.go`](https://github.com/telekom/controlplane/blob/main/admin/api/v1/zone_types.go)
+  [`admin/api/v1/zone_types.go`](https://github.com/telekom/controlplane/blob/main/admin/api/v1/zone_types.go), `Route`
+  creation in `api/internal/handler/apiexposure/handler.go`, Kong configuration in
+  `gateway/internal/handler/route/handler.go`
