@@ -37,19 +37,21 @@ A big-bang migration per zone and a new hostname for kgateway do not meet the fi
 
 ## Considered Options
 
-- kgateway in front, Kong as fallback for `/`
-- Kong in front, kgateway behind
+- kgateway replaces the ingress controller, Kong as fallback for `/`
+- Kong stays behind the ingress controller, kgateway behind Kong
 - Weighted traffic split between the two gateways at the load balancer or in DNS
 
 ## Decision Outcome
 
-Chosen option: "kgateway in front, Kong as fallback for `/`", because it moves routes one by one and makes kgateway the
-entry point before any route moves.
+Chosen option: "kgateway replaces the ingress controller, Kong as fallback for `/`", because it moves routes one by one
+and puts kgateway into the request path before any route moves.
 
-After the move of the entry point, kgateway receives all traffic of the zone. A catch-all `HTTPRoute` for
-`PathPrefix /`, the fallback route, sends all requests to Kong. The control plane configures both gateways. For each
-migrated route, it creates an `HTTPRoute` with a more specific path in kgateway. In Gateway API, the more specific path
-has precedence. So kgateway sends these requests directly to the provider. All other requests go through Kong as before.
+kgateway takes over the role of the ingress controller for the API traffic of the zone. It is not an additional hop:
+requests pass kgateway and Kong, as they pass the ingress controller and Kong today. After the ingress moves, kgateway
+receives all API traffic of the zone. A catch-all `HTTPRoute` for `PathPrefix /`, the fallback route, sends all requests
+to Kong. The control plane configures both gateways. For each migrated route, it creates an `HTTPRoute` with a more
+specific path in kgateway. In Gateway API, the more specific path has precedence. So kgateway sends these requests
+directly to the provider. All other requests go through Kong as before.
 
 ```mermaid
 flowchart LR
@@ -62,14 +64,14 @@ flowchart LR
 ### Consequences
 
 - Good, because consumers and providers see no change.
-- Good, because the entry point moves before any route moves. At that time, kgateway only forwards to Kong. The risk is
-  limited to the extra hop.
+- Good, because kgateway replaces the ingress controller before any route moves. At that time, kgateway only forwards to
+  Kong, as the ingress controller does today.
 - Good, because a route goes live or rolls back with a change in the control plane only.
-- Bad, because requests on routes that did not move pass two proxies. This adds latency and one more point of failure.
+- Good, because the number of hops does not grow. Requests on migrated routes skip Kong and pass one proxy less than
+  today.
 - Bad, because the control plane configures two gateways at the same time. It must show the status of each gateway.
 - Bad, because the client IP setup of Kong expects the ingress controller in front. Zones must change it, see
   [Client IP in Kong](#client-ip-in-kong).
-- Bad, because the ingress controller must stay for the admin API of Kong until we remove Kong.
 
 ## Implementation Sketch
 
@@ -87,8 +89,9 @@ The steps use the test header, see [Per-route switch](#per-route-switch).
    Kong stays fully configured.
 5. Test the fallback route. Call the kgateway Service directly with the `Host` header of the zone and a valid consumer
    token.
-6. Move the ingress of the Kong proxy to kgateway, see [Open Questions](#open-questions). Before that, change the client
-   IP setup of Kong, see [Client IP in Kong](#client-ip-in-kong).
+6. Let kgateway replace the ingress controller for the Kong proxy, see [Open Questions](#open-questions). The ingress of
+   the Kong admin API stays. Before that, change the client IP setup of Kong, see
+   [Client IP in Kong](#client-ip-in-kong).
 7. Smoke-test one route on the real hostname with the test header.
 8. Make the routes go live one by one. To roll back a route, put it back into test mode.
 9. When all routes are live, check that the fallback route gets no traffic. Then turn it off.
@@ -287,21 +290,21 @@ implementations:
 
 ## Pros and Cons of the Options
 
-### kgateway in front, Kong as fallback for `/`
+### kgateway replaces the ingress controller, Kong as fallback for `/`
 
 - Good, because routes move one by one.
-- Good, because kgateway becomes the entry point early, with no change in behavior.
-- Good, because migrated routes pass one proxy only.
-- Bad, because routes that did not move pass two proxies.
+- Good, because kgateway replaces the ingress controller early, with no change in behavior.
+- Good, because migrated routes pass one proxy only. Routes that did not move pass two proxies, as today.
+- Bad, because the control plane configures two gateways until all routes have moved.
 
-### Kong in front, kgateway behind
+### Kong stays behind the ingress controller, kgateway behind Kong
 
 The control plane changes the upstream of a migrated Kong route to kgateway.
 
 - Good, because routes move one by one.
-- Good, because the entry point does not change during the migration.
-- Bad, because migrated routes also pass two proxies, until Kong is removed.
-- Bad, because the entry point moves to kgateway at the end, for all routes at once.
+- Good, because the ingress controller stays during the migration.
+- Bad, because migrated routes pass three proxies (ingress controller, Kong and kgateway) until Kong is removed.
+- Bad, because kgateway replaces the ingress controller at the end, for all routes at once.
 - Bad, because the Kong route of a migrated route must forward without its own policies. This adds a third kind of Kong
   configuration.
 
