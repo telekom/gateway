@@ -210,6 +210,46 @@ flowchart TD
     switch -- yes --> live["Create kgateway resources live (without header match)"]
 ```
 
+#### Alternatives: one operator per gateway
+
+The sketch above puts the decision and both gateways into the `gateway-operator`. We could also use one operator per
+gateway: the `gateway-operator` for Kong and a new `kgateway-operator`. The `kgateway-operator` could live in this
+repository. There are two ways to do this:
+
+- **Resources per gateway.** The producers create one resource per gateway, for example a `KongRoute` (or the current
+  `Route`) and a `KgatewayRoute`. Each operator reconciles its own kind. The producers make the decision.
+- **Shared `Route`.** The producers stay as they are. Both operators reconcile the same `Route`, and each operator
+  decides if the route is for its gateway.
+
+```mermaid
+flowchart LR
+    producers["Producers (api, event, agentic, admin, file)"] -- creates --> kongroute[KongRoute]
+    producers -- creates --> kgwroute[KgatewayRoute]
+    kongroute --> gwop[gateway-operator] --> kong[Kong]
+    kgwroute --> kgwop[kgateway-operator] --> kgw[kgateway resources]
+```
+
+The diagram shows resources per gateway. With a shared `Route`, both operators reconcile the same `Route`.
+
+Resources per gateway:
+
+- Good, because each operator and each resource has one gateway only. Fields that only Kong uses, for example
+  `additionalTags` and the buffering options, stay out of the `KgatewayRoute`.
+- Good, because the status of each gateway is visible on its own resource.
+- Good, because the removal of Kong at the end removes one kind and one operator.
+- Bad, because five domains create `Route`s today (admin, api, event, agentic and file), with about nine separate
+  builders and no shared one. Each builder must make the decision, or a new shared library must make it.
+- Bad, because the producers must know which features kgateway supports. This knowledge belongs to the gateway domain.
+- Bad, because parents read the `Route`: its `Ready` condition, its hostnames and paths for public URLs, and references
+  in their status. `ConsumeRoute.spec.route` has no kind. All of these must handle two kinds.
+
+Shared `Route`:
+
+- Good, because the producers and the readers of `Route` do not change.
+- Good, because the operators are separate, as with resources per gateway.
+- Bad, because two operators write the status of one `Route`. Each operator needs its own conditions, and the readers of
+  `Ready` must combine them.
+
 ### Zone configuration
 
 This sketch is only an idea. We will change the control plane to support the new gateway and decide the API there.
@@ -280,6 +320,8 @@ The control plane changes the upstream of a migrated Kong route to kgateway.
 - Test header, selected test routes or create on switch? Where is the switch (field, annotation, label or CRD), and what
   is the name of the header?
 - What does the control plane do when one gateway accepts a change and the other rejects it?
+- Which operator decides which gateway gets a route: the `gateway-operator`, the producers, or one operator per gateway?
+  See [Alternatives: one operator per gateway](#alternatives-one-operator-per-gateway).
 
 ### Client IP in Kong
 
@@ -318,4 +360,4 @@ Open: how does kgateway fill `X-Forwarded-For`, for example does it append to an
 - Control plane: exact base path check in `api/internal/handler/api/handler.go`, zone and preset API in
   [`admin/api/v1/zone_types.go`](https://github.com/telekom/controlplane/blob/main/admin/api/v1/zone_types.go), `Route`
   creation in `api/internal/handler/apiexposure/handler.go`, Kong configuration in
-  `gateway/internal/handler/route/handler.go`
+  `gateway/internal/handler/route/handler.go`, `Route` and `ConsumeRoute` API in `gateway/api/v1/`
