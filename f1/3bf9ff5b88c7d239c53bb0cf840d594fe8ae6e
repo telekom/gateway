@@ -1,0 +1,16 @@
+token-minter/internal/token/token.go
+  h_65f5d22af11f8f 1-119
+token-minter/internal/token/token_test.go
+  h_65f5d22af11f8f 1-300
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.6",
+  "base_commit_sha": "f13bf9ff5b88c7d239c53bb0cf840d594fe8ae6e",
+  "prompts": {},
+  "humans": {
+    "h_65f5d22af11f8f": {
+      "author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  }
+}
