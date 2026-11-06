@@ -1,0 +1,24 @@
+REUSE.toml
+  h_65f5d22af11f8f 16-21
+token-minter/.gitignore
+  h_65f5d22af11f8f 1-6
+token-minter/go.mod
+  h_65f5d22af11f8f 1-34
+token-minter/go.sum
+  h_65f5d22af11f8f 1-56
+token-minter/internal/keys/store.go
+  h_65f5d22af11f8f 1-224
+token-minter/internal/keys/store_test.go
+  h_65f5d22af11f8f 1-278
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.6",
+  "base_commit_sha": "b9f6694b699c96d5ff839b8292855e23ca2687cd",
+  "prompts": {},
+  "humans": {
+    "h_65f5d22af11f8f": {
+      "author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  }
+}
