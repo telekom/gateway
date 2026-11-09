@@ -1,0 +1,35 @@
+token-minter/internal/token/token_test.go
+  s_9396d2c594a7d6::t_7ec3bcfcfd1fd2 190-300
+  s_9396d2c594a7d6::t_fc3bf79de68332 21
+docs/developer/token-minter.md
+  s_9396d2c594a7d6::t_37cdb5cdcd6624 172-175
+  s_9396d2c594a7d6::t_b54c476abe86a5 136-137
+  s_9396d2c594a7d6::t_79acf662e902e9 160
+token-minter/internal/token/token.go
+  s_9396d2c594a7d6::t_c891304a63be70 12
+  s_9396d2c594a7d6::t_109fae1bf24e83 22-24,35,37-39
+  s_9396d2c594a7d6::t_4ba04102561c78 86-90,97-145
+  s_9396d2c594a7d6::t_07f9fbb0149841 146
+token-minter/internal/extproc/server_test.go
+  s_9396d2c594a7d6::t_e3ba33ade241bd 125-127,129-135
+  s_9396d2c594a7d6::t_2448de613b890d 128
+  s_9396d2c594a7d6::t_68039001d955a8 124
+token-minter/internal/extproc/routedata.go
+  s_9396d2c594a7d6::t_e7f2483f3de9c5 44-49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.7",
+  "base_commit_sha": "bcbb3a438b7011960a0229562a1ec21525d4e05a",
+  "prompts": {},
+  "sessions": {
+    "s_9396d2c594a7d6": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e7366d96affeXpwcf1ISJeW9fR",
+        "model": "unknown"
+      },
+      "human_author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  }
+}
