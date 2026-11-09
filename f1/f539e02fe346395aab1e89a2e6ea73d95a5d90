@@ -1,0 +1,16 @@
+token-minter/go.mod
+  h_65f5d22af11f8f 25,28-34
+token-minter/go.sum
+  h_65f5d22af11f8f 25-26,33-36,43-50,53-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.6",
+  "base_commit_sha": "f1f539e02fe346395aab1e89a2e6ea73d95a5d90",
+  "prompts": {},
+  "humans": {
+    "h_65f5d22af11f8f": {
+      "author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  }
+}
