@@ -1,0 +1,16 @@
+docs/decisions/0008-define-the-inputs-and-claims-of-the-token-minter.md
+  h_65f5d22af11f8f 85,88-89,91,103-105
+docs/developer/token-minter.md
+  h_65f5d22af11f8f 10,232-233,237-239,241-245,247-248
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.6",
+  "base_commit_sha": "adc1cfa65c1a2465b3a3a256c66049805ca4ebf3",
+  "prompts": {},
+  "humans": {
+    "h_65f5d22af11f8f": {
+      "author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  }
+}
