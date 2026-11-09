@@ -1,0 +1,20 @@
+docs/developer/token-minter.md
+  s_9396d2c594a7d6::t_9c7551f673b9ed 16-52,55-56,64-103
+  s_9396d2c594a7d6::t_74ec321805e99d 104
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.7",
+  "base_commit_sha": "1e7718510e841d6d69ac8e0714a60682c6db54f5",
+  "prompts": {},
+  "sessions": {
+    "s_9396d2c594a7d6": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e7366d96affeXpwcf1ISJeW9fR",
+        "model": "unknown"
+      },
+      "human_author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  }
+}
