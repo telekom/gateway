@@ -1,15 +1,23 @@
 token-minter/.ko.yaml
   s_9396d2c594a7d6::t_68d291c76eccf2 5-19
+  h_65f5d22af11f8f 5-19
 token-minter/Makefile
   s_9396d2c594a7d6::t_bae1ad5c7dd60d 5-6,55-58,60-64
+  h_65f5d22af11f8f 5-6,55-58,60-64
 token-minter/README.md
   s_9396d2c594a7d6::t_58f604f60a060e 15-17,24,28,31-32
+  h_65f5d22af11f8f 15-17,24,28,31-32
 ---
 {
   "schema_version": "authorship/3.0.0",
   "git_ai_version": "1.7.7",
   "base_commit_sha": "b497c17c213fa0b76b3470c6439277b906a8e046",
   "prompts": {},
+  "humans": {
+    "h_65f5d22af11f8f": {
+      "author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  },
   "sessions": {
     "s_9396d2c594a7d6": {
       "agent_id": {
