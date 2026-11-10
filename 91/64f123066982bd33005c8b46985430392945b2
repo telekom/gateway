@@ -1,11 +1,17 @@
 token-minter/.ko.yaml
   s_9396d2c594a7d6::t_351c2cd4f2275a 6
+  h_65f5d22af11f8f 6
 ---
 {
   "schema_version": "authorship/3.0.0",
   "git_ai_version": "1.7.7",
   "base_commit_sha": "9164f123066982bd33005c8b46985430392945b2",
   "prompts": {},
+  "humans": {
+    "h_65f5d22af11f8f": {
+      "author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  },
   "sessions": {
     "s_9396d2c594a7d6": {
       "agent_id": {
