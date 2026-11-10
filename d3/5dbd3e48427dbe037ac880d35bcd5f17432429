@@ -1,13 +1,20 @@
 token-minter/go.mod
   s_9396d2c594a7d6::t_09cd0ca35f6437 25,28-34
+  h_65f5d22af11f8f 25,28-34
 token-minter/go.sum
   s_9396d2c594a7d6::t_afee814e4d038c 25-26,33-36,43-50,53-54
+  h_65f5d22af11f8f 25-26,33-36,43-50,53-54
 ---
 {
   "schema_version": "authorship/3.0.0",
   "git_ai_version": "1.7.7",
   "base_commit_sha": "d35dbd3e48427dbe037ac880d35bcd5f17432429",
   "prompts": {},
+  "humans": {
+    "h_65f5d22af11f8f": {
+      "author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  },
   "sessions": {
     "s_9396d2c594a7d6": {
       "agent_id": {
