@@ -1,0 +1,38 @@
+Makefile
+  h_65f5d22af11f8f 20-22,24-30
+README.md
+  h_65f5d22af11f8f 23-24
+token-minter/.dockerignore
+  h_65f5d22af11f8f 1-10
+token-minter/Dockerfile
+  h_65f5d22af11f8f 1-25
+token-minter/Makefile
+  h_65f5d22af11f8f 1-63
+token-minter/README.md
+  h_65f5d22af11f8f 1-31
+token-minter/cmd/token-minter/main.go
+  h_65f5d22af11f8f 1-130
+token-minter/internal/config/config.go
+  h_65f5d22af11f8f 1-77
+token-minter/internal/config/config_test.go
+  h_65f5d22af11f8f 1-84
+token-minter/internal/extproc/routedata.go
+  h_65f5d22af11f8f 1-82
+token-minter/internal/extproc/server.go
+  h_65f5d22af11f8f 1-268
+token-minter/internal/extproc/server_test.go
+  h_65f5d22af11f8f 1-359
+token-minter/internal/telemetry/metrics.go
+  h_65f5d22af11f8f 1-80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.7",
+  "base_commit_sha": "f3d574d998e37497835092efe621dd057b9a8a09",
+  "prompts": {},
+  "humans": {
+    "h_65f5d22af11f8f": {
+      "author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  }
+}
