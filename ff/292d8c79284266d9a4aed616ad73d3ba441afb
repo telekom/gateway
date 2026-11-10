@@ -1,13 +1,26 @@
 docs/developer/token-minter.md
   s_9396d2c594a7d6::t_6518219b96f1da 136-137,160,172-175
+  s_9396d2c594a7d6::t_37cdb5cdcd6624 172-175
+  s_9396d2c594a7d6::t_79acf662e902e9 160
+  s_9396d2c594a7d6::t_b54c476abe86a5 136-137
 token-minter/internal/extproc/routedata.go
   s_9396d2c594a7d6::t_af98cc237c1714 44-49
+  s_9396d2c594a7d6::t_e7f2483f3de9c5 44-49
 token-minter/internal/extproc/server_test.go
   s_9396d2c594a7d6::t_92ed80463b70a8 124-135
+  s_9396d2c594a7d6::t_68039001d955a8 124
+  s_9396d2c594a7d6::t_e3ba33ade241bd 125-127,129-135
+  s_9396d2c594a7d6::t_2448de613b890d 128
 token-minter/internal/token/token.go
   s_9396d2c594a7d6::t_333ec636fd3d85 12,22-24,35,37-39,86-90,97-146
+  s_9396d2c594a7d6::t_c891304a63be70 12
+  s_9396d2c594a7d6::t_4ba04102561c78 86-90,97-145
+  s_9396d2c594a7d6::t_109fae1bf24e83 22-24,35,37-39
+  s_9396d2c594a7d6::t_07f9fbb0149841 146
 token-minter/internal/token/token_test.go
   s_9396d2c594a7d6::t_5eb5e12e73d0ac 21,190-300
+  s_9396d2c594a7d6::t_7ec3bcfcfd1fd2 190-300
+  s_9396d2c594a7d6::t_fc3bf79de68332 21
 ---
 {
   "schema_version": "authorship/3.0.0",
