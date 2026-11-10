@@ -1,0 +1,21 @@
+.golangci.yml
+  s_9396d2c594a7d6::t_6a91c5500c393b 1-453
+LICENSES/MIT.txt
+  s_9396d2c594a7d6::t_e0d08ef47d448f 1-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.7",
+  "base_commit_sha": "22591de17dc656056bf38f2a98c069c1efb50a99",
+  "prompts": {},
+  "sessions": {
+    "s_9396d2c594a7d6": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e7366d96affeXpwcf1ISJeW9fR",
+        "model": "unknown"
+      },
+      "human_author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  }
+}
