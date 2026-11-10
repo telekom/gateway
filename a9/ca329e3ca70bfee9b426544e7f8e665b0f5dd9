@@ -1,11 +1,17 @@
 docs/developer/token-minter.md
   s_9396d2c594a7d6::t_6089fb9a24a839 81,91-103
+  h_65f5d22af11f8f 81,91-103
 ---
 {
   "schema_version": "authorship/3.0.0",
   "git_ai_version": "1.7.7",
   "base_commit_sha": "a9ca329e3ca70bfee9b426544e7f8e665b0f5dd9",
   "prompts": {},
+  "humans": {
+    "h_65f5d22af11f8f": {
+      "author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  },
   "sessions": {
     "s_9396d2c594a7d6": {
       "agent_id": {
