@@ -1,7 +1,9 @@
 docs/decisions/0008-define-the-inputs-and-claims-of-the-token-minter.md
   s_9396d2c594a7d6::t_ac790cda0d64a3 101-102
+  s_9396d2c594a7d6::t_babd510217f07a 101-102
 docs/developer/token-minter.md
   s_9396d2c594a7d6::t_a564a0ba513b72 334
+  s_9396d2c594a7d6::t_db416e6703a167 334
 ---
 {
   "schema_version": "authorship/3.0.0",
