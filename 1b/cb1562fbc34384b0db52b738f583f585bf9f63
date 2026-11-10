@@ -1,0 +1,21 @@
+docs/decisions/0008-define-the-inputs-and-claims-of-the-token-minter.md
+  s_9396d2c594a7d6::t_8252aaffc91558 85,88-89,91,103-105
+docs/developer/token-minter.md
+  s_9396d2c594a7d6::t_ddf0eb0e90bd6e 10,232-233,237-239,241-245,247-248
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.7",
+  "base_commit_sha": "1bcb1562fbc34384b0db52b738f583f585bf9f63",
+  "prompts": {},
+  "sessions": {
+    "s_9396d2c594a7d6": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e7366d96affeXpwcf1ISJeW9fR",
+        "model": "unknown"
+      },
+      "human_author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  }
+}
