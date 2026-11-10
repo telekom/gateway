@@ -1,0 +1,29 @@
+REUSE.toml
+  s_9396d2c594a7d6::t_91ed0fa4ca203a 16-21
+token-minter/.gitignore
+  s_9396d2c594a7d6::t_767861a19ae4ee 1-6
+token-minter/go.mod
+  s_9396d2c594a7d6::t_d69b117193e3dc 1-34
+token-minter/go.sum
+  s_9396d2c594a7d6::t_1a0c57a58dde13 1-56
+token-minter/internal/keys/store.go
+  s_9396d2c594a7d6::t_3f23b6c81421f2 1-224
+token-minter/internal/keys/store_test.go
+  s_9396d2c594a7d6::t_c1c818a34399f2 1-278
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.7",
+  "base_commit_sha": "415124d44d8a2a50ed0096ade47b00a8cd254bea",
+  "prompts": {},
+  "sessions": {
+    "s_9396d2c594a7d6": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e7366d96affeXpwcf1ISJeW9fR",
+        "model": "unknown"
+      },
+      "human_author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  }
+}
