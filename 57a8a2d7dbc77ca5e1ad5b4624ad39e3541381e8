@@ -1,0 +1,28 @@
+token-minter/internal/telemetry/metrics_test.go
+  s_8b6a1469850f85::t_f971118e4584b1 9,21,27,31,36-43,56-61,64-65
+  s_8b6a1469850f85::t_3384ce064b462a 1-8,10-20,22-26,28-30,32-35,44-55,62-63,66-82
+token-minter/cmd/token-minter/main.go
+  s_8b6a1469850f85::t_157f0ceb57a0d4 60-61
+token-minter/go.mod
+  s_8b6a1469850f85::t_987cd56e6a9832 24
+token-minter/internal/telemetry/metrics.go
+  s_8b6a1469850f85::t_23ee37412e0591 16-21,24-25
+  s_8b6a1469850f85::t_d563687b54aa90 67,75
+  s_8b6a1469850f85::t_2890659067c223 48,53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.7",
+  "base_commit_sha": "57a8a2d7dbc77ca5e1ad5b4624ad39e3541381e8",
+  "prompts": {},
+  "sessions": {
+    "s_8b6a1469850f85": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e3a03d478ffeBqmDFKS25EAeGX",
+        "model": "unknown"
+      },
+      "human_author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  }
+}

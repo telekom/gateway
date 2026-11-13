@@ -1,0 +1,128 @@
+docs/developer/token-minter.md
+  s_4feae5eff982b8::t_868b052844eaf5 32-34
+  s_4feae5eff982b8::t_d54cbac3acc854 27,35,179,221
+  s_4feae5eff982b8::t_9124c190bb5fa8 192-195
+  s_4feae5eff982b8::t_0912f901cf1099 245-247,249-250
+  s_12e8bc27384d73::t_275a62186b23e5 167-168
+  s_8b6a1469850f85::t_af228bfc7f3e40 137-140
+  s_4feae5eff982b8::t_e001a1866ce558 343
+  s_8b6a1469850f85::t_2635352f0122b6 375
+  s_4feae5eff982b8::t_7d8dd07f39428c 119-122
+  s_8b6a1469850f85::t_6c62af3a6d4353 236-241,244
+  s_12e8bc27384d73::t_5017c8b193e1b5 380
+  s_4feae5eff982b8::t_0b01a7d5785606 186,351
+  s_12e8bc27384d73::t_3e8453d014a8b7 131-133
+  s_4feae5eff982b8::t_7c9cc1c1c71084 218-219
+  s_8b6a1469850f85::t_f562ae3efb96a8 224-225,228
+  s_12e8bc27384d73::t_21077be3418039 148-166,169
+  s_4feae5eff982b8::t_504b2c12112bd0 381
+  s_4feae5eff982b8::t_cf4b6c9d69359d 178
+  s_4feae5eff982b8::t_83f8b4b3b20763 185
+  s_8b6a1469850f85::t_ffd4083a7151a8 268-270
+  s_4feae5eff982b8::t_cb0d59533bb711 26
+  s_4feae5eff982b8::t_f7ac84d78d34dc 28
+  s_12e8bc27384d73::t_939f3f8f8f0400 141-142
+  s_4feae5eff982b8::t_79745ec6229856 248
+  s_4feae5eff982b8::t_eb2b5693652915 276-277
+  s_4feae5eff982b8::t_7628bc0964c21d 128-129
+  s_8b6a1469850f85::t_a94c8d219495cd 259
+  s_4feae5eff982b8::t_44307348e19a74 347
+  s_4feae5eff982b8::t_3ed9d7ab9e16cc 22
+  s_4feae5eff982b8::t_6edaedec36964c 242-243
+  s_4feae5eff982b8::t_ad4d7f7c3da0f7 264-266
+  s_4feae5eff982b8::t_b3fb36c8d9cf53 374
+  s_8b6a1469850f85::t_fcdbcb775f8c4b 113
+  s_4feae5eff982b8::t_fd9ec5f24146c0 184
+  s_8b6a1469850f85::t_1d05c145428661 226-227
+  s_4feae5eff982b8::t_67ddc9bfca74d5 19-21
+  s_4feae5eff982b8::t_a720b515bd02d2 23-25
+  s_4feae5eff982b8::t_0d4ee1c8ade586 29-31
+  s_4feae5eff982b8::t_8c8957cd989e73 123-127
+  s_12e8bc27384d73::t_6c5e229c917250 143-147
+  s_4feae5eff982b8::t_366223c6ebf5d0 180-183
+  s_4feae5eff982b8::t_a6ceb53e4346bd 187-191
+  s_4feae5eff982b8::t_acdcc06c783685 196-198,215-217
+  s_4feae5eff982b8::t_4d9668ef8dd166 220
+  s_8b6a1469850f85::t_a27cab73faa340 229-231,233-235
+  s_4feae5eff982b8::t_14d3c0738ff464 278-280,340-342
+  s_4feae5eff982b8::t_e861cc92ca2e93 344-346
+  s_4feae5eff982b8::t_2253ca34ce56c3 348-350
+  s_4feae5eff982b8::t_a64fab4fbf5663 352-354,371-373
+  s_4feae5eff982b8::t_8d5ac3916dfb1e 382-384
+  s_4feae5eff982b8::t_bb7b8ca3c5ac04 1-18,36-112,114-118,130,134-136,170-177,199-214,222-223,232,251-258,260-263,267,271-275,281-339,355-370,376-379,385
+docs/decisions/0010-carry-subscription-scopes-to-the-token-minter.md
+  s_4feae5eff982b8::t_799b2bfe66d3f2 89-91
+  s_4feae5eff982b8::t_d3035014789044 69
+  s_4feae5eff982b8::t_11bf8eb9bf2799 16
+  s_4feae5eff982b8::t_54d00c8beb5d90 60
+  s_4feae5eff982b8::t_aaa00bd7626ed1 13-15
+  s_4feae5eff982b8::t_4b9921b1de8370 17-19,57-59
+  s_4feae5eff982b8::t_6a2ec7ca55b94b 61-63,66-68
+  s_4feae5eff982b8::t_b57b7214b2e3f7 70-72,86-88
+  s_4feae5eff982b8::t_94e5c5d22c0e6e 92-94
+docs/decisions/0009-define-the-inputs-and-claims-of-the-token-minter.md
+  s_4feae5eff982b8::t_eb0f54ef5e080c 73-74
+  s_4feae5eff982b8::t_2f67690aaec4fe 71-72
+  s_4feae5eff982b8::t_46e9773f6c471a 29
+  s_4feae5eff982b8::t_1167103888c66c 1-28,30-70,75-140
+docs/decisions/0007-choose-where-the-token-minter-runs.md
+  s_12e8bc27384d73::t_2d983e1c218673 55-56
+  s_4feae5eff982b8::t_f5d2c63182c56a 124-126
+  s_12e8bc27384d73::t_93775814f4c399 91-94
+  s_4feae5eff982b8::t_eb0f54ef5e080c 21-22
+  s_4feae5eff982b8::t_f22e4d46f3d3c2 137-138
+  s_4feae5eff982b8::t_174b2e0ade4e3e 57-59
+  s_4feae5eff982b8::t_f7c3176ec4aa4d 63-65,70-72
+  s_12e8bc27384d73::t_b5acb7bd3dce06 101-105
+  s_4feae5eff982b8::t_4d3bca6b4f4095 134-136
+  s_9396d2c594a7d6::t_ee06e958c1344c 12
+  s_4feae5eff982b8::t_6b6021bca39023 66
+  s_9396d2c594a7d6::t_3b4c63a60720d9 76-82
+  s_4feae5eff982b8::t_88f5e261d5fd4c 62,67-69
+  s_12e8bc27384d73::t_8b90e66e194ee2 90
+  s_4feae5eff982b8::t_156a3d01bdfb04 106
+  s_4feae5eff982b8::t_09a42589845443 47-53
+  s_12e8bc27384d73::t_368f1b18de703b 54,60-61,73
+  s_4feae5eff982b8::t_0c164573c4ec08 127-128
+  s_4feae5eff982b8::t_f450bffb3d34c9 1-11,13-20,23-46,74-75,83-89,95-100,107-123,129-133,139-145
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.7",
+  "base_commit_sha": "b474b9883fd839267433b51e19814caf7c092e65",
+  "prompts": {},
+  "sessions": {
+    "s_12e8bc27384d73": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e2f36c21cffe1vtZxs1QmyvjF5",
+        "model": "claude-opus-5.5"
+      },
+      "human_author": "Miká Juznik <mika.juznik@telekom.de>"
+    },
+    "s_4feae5eff982b8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e2c1f5836ffexshewLqpr9amMw",
+        "model": "claude-opus-5.5"
+      },
+      "human_author": "Miká Juznik <mika.juznik@telekom.de>"
+    },
+    "s_8b6a1469850f85": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e3a03d478ffeBqmDFKS25EAeGX",
+        "model": "unknown"
+      },
+      "human_author": "Miká Juznik <mika.juznik@telekom.de>"
+    },
+    "s_9396d2c594a7d6": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e7366d96affeXpwcf1ISJeW9fR",
+        "model": "unknown"
+      },
+      "human_author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  }
+}

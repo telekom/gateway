@@ -1,0 +1,62 @@
+Makefile
+  s_9396d2c594a7d6::t_42609daca0268f 20-22,24-30
+  h_65f5d22af11f8f 20-22,24-30
+README.md
+  s_9396d2c594a7d6::t_bec70ff10185ca 23-24
+  h_65f5d22af11f8f 23-24
+docs/developer/token-minter.md
+  s_9396d2c594a7d6::t_b959b51ee04d0a 10,108-139
+  h_65f5d22af11f8f 10,108-139
+token-minter/Makefile
+  s_9396d2c594a7d6::t_4cf8b4cd92c6b3 1-63
+  h_65f5d22af11f8f 1-63
+token-minter/README.md
+  s_9396d2c594a7d6::t_fc1b3cb713e06b 1-31
+  h_65f5d22af11f8f 1-31
+token-minter/cmd/token-minter/main.go
+  s_9396d2c594a7d6::t_10b726af887177 1-130
+  h_65f5d22af11f8f 1-130
+token-minter/internal/config/config.go
+  s_9396d2c594a7d6::t_584760b10d65c3 1-77
+  h_65f5d22af11f8f 1-77
+token-minter/internal/config/config_test.go
+  s_9396d2c594a7d6::t_646dfeb0477a23 1-84
+  h_65f5d22af11f8f 1-84
+token-minter/internal/extproc/routedata.go
+  s_9396d2c594a7d6::t_eead1d949c2027 1-82
+  h_65f5d22af11f8f 1-82
+token-minter/internal/extproc/server.go
+  s_9396d2c594a7d6::t_56c72a421dfcdf 1-268
+  h_65f5d22af11f8f 1-268
+token-minter/internal/extproc/server_test.go
+  s_9396d2c594a7d6::t_85f928be0db132 1-359
+  h_65f5d22af11f8f 1-359
+token-minter/internal/telemetry/metrics.go
+  s_9396d2c594a7d6::t_453fa1cd9aeb7f 1-80
+  h_65f5d22af11f8f 1-80
+token-minter/.dockerignore
+  h_65f5d22af11f8f 1-10
+token-minter/Dockerfile
+  h_65f5d22af11f8f 1-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.7",
+  "base_commit_sha": "b24d956f961432cb2de00c23e0403759fba5bd17",
+  "prompts": {},
+  "humans": {
+    "h_65f5d22af11f8f": {
+      "author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  },
+  "sessions": {
+    "s_9396d2c594a7d6": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e7366d96affeXpwcf1ISJeW9fR",
+        "model": "unknown"
+      },
+      "human_author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  }
+}

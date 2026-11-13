@@ -1,0 +1,28 @@
+token-minter/go.mod
+  s_9396d2c594a7d6::t_c0db3bd934970c 25,28-34
+  h_65f5d22af11f8f 25,28-34
+token-minter/go.sum
+  s_9396d2c594a7d6::t_0a163e4021fafa 25-26,33-36,43-50,53-54
+  h_65f5d22af11f8f 25-26,33-36,43-50,53-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.7",
+  "base_commit_sha": "a85ac539eeb3ee38ddca4f48373647a793b5e032",
+  "prompts": {},
+  "humans": {
+    "h_65f5d22af11f8f": {
+      "author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  },
+  "sessions": {
+    "s_9396d2c594a7d6": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e7366d96affeXpwcf1ISJeW9fR",
+        "model": "unknown"
+      },
+      "human_author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  }
+}

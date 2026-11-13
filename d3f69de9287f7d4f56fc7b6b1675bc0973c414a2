@@ -1,0 +1,14 @@
+token-minter/.ko.yaml
+  h_65f5d22af11f8f 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.6",
+  "base_commit_sha": "d3f69de9287f7d4f56fc7b6b1675bc0973c414a2",
+  "prompts": {},
+  "humans": {
+    "h_65f5d22af11f8f": {
+      "author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+.golangci.yml
+  h_65f5d22af11f8f 1-453
+LICENSES/MIT.txt
+  h_65f5d22af11f8f 1-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.7",
+  "base_commit_sha": "2c05398d3d3a87977feb409ed648202a733e6c05",
+  "prompts": {},
+  "humans": {
+    "h_65f5d22af11f8f": {
+      "author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  }
+}

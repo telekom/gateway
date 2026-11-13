@@ -1,0 +1,18 @@
+docs/decisions/0007-run-the-token-minter-as-its-own-deployment.md
+  h_65f5d22af11f8f 1-103
+docs/decisions/0008-define-the-inputs-and-claims-of-the-token-minter.md
+  h_65f5d22af11f8f 1-133
+docs/developer/token-minter.md
+  h_65f5d22af11f8f 1-214
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.6",
+  "base_commit_sha": "94b47e6701d38b3b41a0c829000044aac21f30f2",
+  "prompts": {},
+  "humans": {
+    "h_65f5d22af11f8f": {
+      "author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+token-minter/internal/extproc/server_test.go
+  s_8b6a1469850f85::t_11bf4742466ab0 248-266
+  s_8b6a1469850f85::t_2e77523b36de0f 45
+  s_8b6a1469850f85::t_843b507bef01d2 307
+token-minter/internal/extproc/routedata.go
+  s_8b6a1469850f85::t_84ca95cfb1f183 72-76
+token-minter/internal/extproc/server.go
+  s_8b6a1469850f85::t_69e335af91bdb6 99,101,107-108,112
+  s_8b6a1469850f85::t_bcb2d10ba3d4ff 176-180,182-183,185-186,188,190
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.7",
+  "base_commit_sha": "daedbc47c37dd0ffaa7d0bfdd644f0cc202161dc",
+  "prompts": {},
+  "sessions": {
+    "s_8b6a1469850f85": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e3a03d478ffeBqmDFKS25EAeGX",
+        "model": "unknown"
+      },
+      "human_author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  }
+}

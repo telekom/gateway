@@ -1,0 +1,40 @@
+REUSE.toml
+  s_9396d2c594a7d6::t_9bf16e4acf09cf 16-21
+  h_65f5d22af11f8f 16-21
+token-minter/.gitignore
+  s_9396d2c594a7d6::t_0493ec43d695df 1-6
+  h_65f5d22af11f8f 1-6
+token-minter/go.mod
+  s_9396d2c594a7d6::t_7509ee3f67c946 1-34
+  h_65f5d22af11f8f 1-34
+token-minter/go.sum
+  s_9396d2c594a7d6::t_5494a4344fd82a 1-56
+  h_65f5d22af11f8f 1-56
+token-minter/internal/keys/store.go
+  s_9396d2c594a7d6::t_e2d1f79835e783 1-224
+  h_65f5d22af11f8f 1-224
+token-minter/internal/keys/store_test.go
+  s_9396d2c594a7d6::t_b44dd43cf383c3 1-278
+  h_65f5d22af11f8f 1-278
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.7",
+  "base_commit_sha": "80c703f71e787ef25c24dc69ffd80ea0c072af73",
+  "prompts": {},
+  "humans": {
+    "h_65f5d22af11f8f": {
+      "author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  },
+  "sessions": {
+    "s_9396d2c594a7d6": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e7366d96affeXpwcf1ISJeW9fR",
+        "model": "unknown"
+      },
+      "human_author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  }
+}
