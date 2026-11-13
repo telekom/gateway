@@ -19,14 +19,16 @@ Each component gets its own top-level directory when we add it.
 ## Documentation and decisions
 
 Documentation and decision records are in `docs/`. Before you add, move or change anything in `docs/`, or change
-something that a decision covers, read `docs/AGENTS.md`.
+something that a decision covers, read `docs/AGENTS.md`. Encourage the user to persist important decisions and
+documentation in `docs/` and keep them up to date.
 
 ## Checks
 
 Use the Makefile targets. Run `make help` to see them.
 
 ```bash
-make check   # all repository checks
+make check       # REUSE, Markdown and the component lints
+make check-all   # also the component tests. Needs Docker.
 ```
 
 ## Conventions

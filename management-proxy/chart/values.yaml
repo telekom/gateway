@@ -1,0 +1,510 @@
+# SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# Configuration and operation: docs/developer/management-proxy.md.
+# Replace a value with its commented example at the same indentation level.
+#
+# The distributed control plane (dCP) calls the Kubernetes API through the gateway.
+# The gateway validates the caller token and mints a Gateway Token.
+# Envoy validates the Gateway Token before it forwards the request to kubectl proxy.
+# kubectl proxy forwards the request to the Kubernetes API server as the proxy ServiceAccount.
+
+# ============================================================================
+# Chart identity and cluster
+# ============================================================================
+
+# -- Override the chart name in the resource names.
+nameOverride: ""
+
+# -- Override the full resource names.
+fullnameOverride: ""
+
+# -- DNS domain of the cluster. The server certificate includes the Service name in this domain.
+clusterDomain: cluster.local
+
+# ============================================================================
+# Shared request settings
+# ============================================================================
+# The management route and the Envoy sidecar use these settings.
+
+# -- Path prefix of the management route on the gateway, without a trailing slash.
+# kgateway removes the prefix before it forwards a request.
+# The sidecar accepts only Gateway Tokens whose `requestPath` claim starts with this prefix.
+pathPrefix: /management
+
+# -- (list) Client IDs of the dCP that can use the management proxy.
+# REQUIRED. Specify at least one client ID.
+# The sidecar compares them with the client claim of the Gateway Token.
+# The management route compares them with the client claim of the caller token.
+allowedClients: []
+# Example:
+# allowedClients:
+#   - dcp-client
+#   - automation-client
+
+# ============================================================================
+# Management route
+# ============================================================================
+# Requires Gateway API and kgateway CRDs.
+
+route:
+  # -- Create an HTTPRoute, TrafficPolicy and BackendConfigPolicy for the management route.
+  # Disable it only for a test gateway that is not kgateway.
+  enabled: true
+
+  ## Routing and timeouts
+
+  # -- (list) Gateway and listener of the management route.
+  # REQUIRED when route.enabled is true.
+  parentRefs: []
+  # Example:
+  # parentRefs:
+  #   - name: gateway
+  #     namespace: gateway
+  #     sectionName: https
+
+  # -- Hostnames of the management route.
+  # Empty = the hostnames of the listener.
+  hostnames: []
+
+  # -- Idle timeout of a stream on the gateway.
+  # Longer than the bookmark interval of the API server and the 10-minute maximum watch of client-go.
+  streamIdleTimeout: 15m
+
+  ## Caller authentication
+
+  # -- GatewayExtension of type JWT that validates the caller token.
+  # The gateway chart owns this extension.
+  jwtExtensionRef:
+    # -- Name of the GatewayExtension.
+    # REQUIRED when route.enabled is true.
+    name: ""
+
+    # -- Namespace of the GatewayExtension.
+    # Empty = the release namespace.
+    namespace: ""
+
+  # -- (list) Trusted issuers of the caller token.
+  # REQUIRED when route.enabled is true.
+  # The JWT GatewayExtension must have a provider for each issuer.
+  # The route allows a caller token when its issuer and its client match one entry.
+  # Each entry has these keys:
+  # `issuer`: the `iss` claim of the caller token.
+  # `clientClaim`: the claim that holds the client ID, for example clientId, azp or client_id. Default: clientId.
+  # `clients`: the client IDs that this issuer can authenticate. Each one must be in `allowedClients`.
+  # Default: `allowedClients`.
+  issuers: []
+  # Example: accept different client claims from two identity providers.
+  # issuers:
+  #   - issuer: https://idp.example.com/realms/default
+  #     clientClaim: clientId
+  #     clients: [dcp-client]
+  #   - issuer: https://other-idp.example.com/realms/default
+  #     clientClaim: azp
+  #     clients: [automation-client]
+
+  ## Gateway Token minting
+
+  # -- GatewayExtension of type ExtProc that mints the Gateway Token.
+  # The gateway chart owns this extension.
+  extProcExtensionRef:
+    # -- Name of the GatewayExtension.
+    # REQUIRED when route.enabled is true.
+    name: ""
+
+    # -- Namespace of the GatewayExtension.
+    # Empty = the release namespace.
+    namespace: ""
+
+# ============================================================================
+# Backend TLS
+# ============================================================================
+# kgateway verifies the Envoy server certificate.
+# With mutual TLS, Envoy also verifies the client certificate of kgateway.
+
+tls:
+  # -- Port of the TLS listener of the sidecar. The Service exposes the same port.
+  port: 8443
+
+  ## Certificate issuance
+
+  certManager:
+    # -- Create the server certificate of the sidecar and, with mutual TLS, the client certificate of kgateway.
+    # Requires cert-manager and an issuer that writes `ca.crt` into Secrets, such as a CA or Vault issuer.
+    # ACME issuers do not provide this CA bundle.
+    enabled: true
+
+    # -- Issuer or ClusterIssuer that signs the certificates.
+    issuerRef:
+      # -- Name of the certificate issuer.
+      # REQUIRED when tls.certManager.enabled is true.
+      name: ""
+
+      # -- Kind of the certificate issuer: Issuer or ClusterIssuer.
+      kind: Issuer
+
+      # -- API group of the certificate issuer.
+      group: cert-manager.io
+
+    # Example: use a cluster-wide CA issuer.
+    # issuerRef:
+    #   name: gateway-ca
+    #   kind: ClusterIssuer
+    #   group: cert-manager.io
+
+    # -- Lifetime of the certificates.
+    duration: 2160h
+
+    # -- Time before expiry when cert-manager renews the certificates.
+    renewBefore: 720h
+
+  ## Server certificate
+
+  serverCertificate:
+    # -- Secret with `tls.crt` and `tls.key` of the sidecar.
+    # REQUIRED when tls.certManager.enabled is false.
+    # Default with cert-manager: `<fullname>-server`.
+    # Include `ca.crt` when tls.serverCertificate.caSecretName is empty.
+    secretName: ""
+
+    # -- Secret in the release namespace with the key `ca.crt` that kgateway uses to verify the sidecar.
+    # The management route uses it without mutual TLS. Default: the server Secret.
+    caSecretName: ""
+
+  ## Client certificate
+
+  clientCertificate:
+    # -- Require a client certificate of kgateway (mutual TLS).
+    enabled: false
+
+    # -- Secret with the client certificate of kgateway (`tls.crt`, `tls.key`).
+    # REQUIRED when tls.clientCertificate.enabled and route.enabled are true and tls.certManager.enabled is false.
+    # Default with cert-manager: `<fullname>-client`.
+    # Include the CA that verifies the sidecar in `ca.crt`.
+    # The management route uses it with mutual TLS.
+    secretName: ""
+
+    # -- Secret with the key `ca.crt` that the sidecar uses to verify kgateway.
+    # Empty = the server Secret.
+    caSecretName: ""
+
+    # -- DNS SAN of the client certificate of kgateway. The sidecar rejects other client certificates.
+    # Default: `<fullname>-client.<release namespace>`.
+    dnsName: ""
+
+# ============================================================================
+# Envoy
+# ============================================================================
+# Envoy validates Gateway Tokens and forwards accepted requests to kubectl proxy.
+
+envoy:
+  ## Container settings
+
+  # -- Envoy image. Pin it by digest in the tag: `<tag>@sha256:<digest>`.
+  # Dependabot updates the tag and the digest.
+  image:
+    repository: docker.io/envoyproxy/envoy
+    tag: distroless-v1.40.2@sha256:09ca6f2140a61ad8df11779a4a30d52b48433d444466328494f9188c9c35eded
+    pullPolicy: IfNotPresent
+
+  # -- Envoy container resource requests and limits.
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      memory: 256Mi
+
+  ## Logging and health
+
+  # -- Envoy log level: trace, debug, info, warning, error, critical or off.
+  logLevel: info
+
+  # -- Port of the readiness and metrics listener. The Service does not expose it.
+  healthPort: 8081
+
+  ## Gateway Token validation
+
+  gatewayToken:
+    # -- Expected `iss` claim of the Gateway Token.
+    # REQUIRED. Example issuer: "https://gateway.example.com/auth/realms/default".
+    issuer: ""
+
+    # -- Accepted `aud` values. The sidecar does not check the audience while the list is empty.
+    audiences: []
+
+    # -- Name of the claim that holds the client ID of the caller.
+    clientClaim: clientId
+
+    # -- Bind each token to one request.
+    # The `operation` claim must be the HTTP method.
+    # The `requestPath` claim must be the path prefix plus the request path, without the query.
+    requestBinding: true
+
+    # -- JWKS endpoint of the issuer. The sidecar fetches the signing keys from it.
+    jwks:
+      # -- HTTPS URL of the JWKS endpoint.
+      # REQUIRED.
+      uri: ""
+
+      # -- Connect to this host instead of the URI host, for example the in-cluster Service of the gateway.
+      # The request keeps the host of the URI for SNI and certificate verification.
+      address: ""
+
+      # -- Port for `address` (0 = the port of the URI).
+      port: 0
+
+      # -- ConfigMap with the key `ca.crt` that verifies the JWKS endpoint.
+      # Empty = the system CAs of the Envoy image.
+      caConfigMap: ""
+
+      # -- How long the sidecar caches the keys.
+      cacheDuration: 300s
+
+    # Example: reach the gateway Service while keeping the public TLS identity.
+    # jwks:
+    #   uri: https://gateway.example.com/auth/realms/default/protocol/openid-connect/certs
+    #   address: gateway-proxy.gateway.svc.cluster.local
+    #   port: 8443
+    #   caConfigMap: gateway-ca
+
+  ## Stream and connection limits
+
+  # -- Idle timeout of a stream on the sidecar.
+  # Longer than the bookmark interval of the API server and the 10-minute maximum watch of client-go.
+  streamIdleTimeout: 900s
+
+  # -- Upper limit for a watch after its token expired.
+  maxStreamDuration: 900s
+
+  # -- Maximum number of open downstream connections.
+  maxDownstreamConnections: 1024
+
+# ============================================================================
+# Kubernetes API forwarder
+# ============================================================================
+# kubectl proxy forwards requests to the Kubernetes API with the proxy ServiceAccount.
+
+kubectlProxy:
+  ## Container settings
+
+  # -- kubectl image. Pin it by digest in the tag: `<tag>@sha256:<digest>`.
+  # Dependabot updates the tag and the digest. Keep kubectl within one minor version of the API server.
+  image:
+    repository: registry.k8s.io/kubectl
+    tag: v1.36.6@sha256:0650805141538d13ccbb6bb9e0dd647bc415bc002898357970211c4d47224396
+    pullPolicy: IfNotPresent
+
+  # -- kubectl proxy container resource requests and limits.
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      memory: 256Mi
+
+  ## Kubernetes API access
+
+  # -- API groups that kubectl proxy forwards, in addition to discovery and OpenAPI.
+  # Specify at least one group. RBAC stays the authority.
+  apiGroups:
+    - gateway.networking.k8s.io
+    - gateway.kgateway.dev
+
+  # -- Lifetime of the projected ServiceAccount token in seconds (minimum 600).
+  # Only kubectl proxy mounts the token. The kubelet rotates it after 80% of the lifetime.
+  # Do not use 3607: for this value, the API server issues a token that is valid for one year.
+  tokenExpirationSeconds: 3600
+
+# ============================================================================
+# Deployment
+# ============================================================================
+
+deployment:
+  # -- Number of management proxy pod replicas.
+  replicaCount: 2
+
+  ## Pod metadata and image access
+
+  # -- Additional annotations of the pods.
+  podAnnotations: {}
+  # Example:
+  # podAnnotations:
+  #   example.com/owner: platform-team
+  #   example.com/runbook: https://docs.example.com/management-proxy
+
+  # -- Additional labels of the pods.
+  podLabels: {}
+
+  # -- Names of the pull Secrets for the images.
+  imagePullSecrets: []
+  # Example:
+  # imagePullSecrets:
+  #   - name: registry-credentials
+
+  ## Shutdown
+
+  # -- Time in seconds between the start of pod termination and the stop of Envoy.
+  # Endpoints and gateways stop sending new requests during this time. kubectl proxy stops 5 seconds after Envoy.
+  shutdownDelaySeconds: 10
+
+  # -- Termination grace period of the pod in seconds.
+  terminationGracePeriodSeconds: 30
+
+  ## Scheduling
+
+  # -- Node selector of the pods.
+  nodeSelector: {}
+
+  # -- Tolerations of the pods.
+  tolerations: []
+  # Example: allow scheduling on nodes with a matching NoSchedule taint.
+  # tolerations:
+  #   - key: dedicated
+  #     operator: Equal
+  #     value: gateway
+  #     effect: NoSchedule
+
+  # -- Affinity of the pods.
+  affinity: {}
+  # Example: prefer nodes in a specific zone.
+  # affinity:
+  #   nodeAffinity:
+  #     preferredDuringSchedulingIgnoredDuringExecution:
+  #       - weight: 100
+  #         preference:
+  #           matchExpressions:
+  #             - key: topology.kubernetes.io/zone
+  #               operator: In
+  #               values: [zone-a]
+
+  # -- Topology spread constraints of the pods.
+  # Empty = spread the replicas over nodes, if possible.
+  topologySpreadConstraints: []
+  # Example: prefer a spread of management proxy pods across zones.
+  # topologySpreadConstraints:
+  #   - maxSkew: 1
+  #     topologyKey: topology.kubernetes.io/zone
+  #     whenUnsatisfiable: ScheduleAnyway
+  #     labelSelector:
+  #       matchLabels:
+  #         app.kubernetes.io/component: management-proxy
+
+  # -- Name of an existing PriorityClass for the pods.
+  priorityClassName: ""
+
+# ============================================================================
+# Disruption budget
+# ============================================================================
+
+podDisruptionBudget:
+  # -- Create a PodDisruptionBudget.
+  enabled: true
+
+  # -- Minimum available pods.
+  minAvailable: 1
+
+# ============================================================================
+# Kubernetes permissions
+# ============================================================================
+
+rbac:
+  # -- (list) Namespaces that the dCP can configure through the proxy ServiceAccount.
+  # REQUIRED. Specify at least one namespace.
+  # The chart creates a Role and a RoleBinding in each namespace.
+  # It refuses namespaces of the management proxy, management route, parent Gateways and GatewayExtensions.
+  # Exclude the global policy namespace of kgateway: its policies can attach to routes in all namespaces.
+  namespaces: []
+  # Example:
+  # namespaces:
+  #   - gateway-routes
+  #   - gateway-routes-staging
+
+  # -- Rules of the Role in each namespace.
+  rules:
+    - apiGroups: [gateway.networking.k8s.io]
+      resources: [httproutes]
+      verbs: [get, list, watch, create, update, patch, delete]
+    - apiGroups: [gateway.kgateway.dev]
+      resources: [trafficpolicies]
+      verbs: [get, list, watch, create, update, patch, delete]
+
+# ============================================================================
+# Network access
+# ============================================================================
+# NetworkPolicy ports match pod target ports, not Service ports.
+
+networkPolicy:
+  # -- Create a NetworkPolicy for the management proxy pods.
+  enabled: true
+
+  ## Ingress
+
+  ingress:
+    # -- Peers that can reach the TLS listener, for example the kgateway proxy pods.
+    # Empty = no peer.
+    from: []
+    # Example: require both the namespace and pod labels to match.
+    # from:
+    #   - namespaceSelector:
+    #       matchLabels:
+    #         kubernetes.io/metadata.name: gateway
+    #     podSelector:
+    #       matchLabels:
+    #         gateway.networking.k8s.io/gateway-name: gateway
+
+    # -- Peers that can scrape the metrics on the health port.
+    # Empty = no peer.
+    metricsFrom: []
+    # Example:
+    # metricsFrom:
+    #   - namespaceSelector:
+    #       matchLabels:
+    #         kubernetes.io/metadata.name: monitoring
+
+  ## Egress
+
+  egress:
+    # -- Restrict egress to the API server, DNS and the JWKS endpoint.
+    enabled: true
+
+    apiServer:
+      # -- (list) CIDRs of the API server endpoints.
+      # REQUIRED when networkPolicy.enabled and networkPolicy.egress.enabled are true.
+      # Find them with `kubectl get endpointslices -l kubernetes.io/service-name=kubernetes`.
+      cidrs: []
+      # Example:
+      # cidrs:
+      #   - 10.0.0.1/32
+      #   - 10.0.0.2/32
+
+      # -- Target ports of the API server.
+      ports: [443, 6443]
+
+    dns:
+      # -- Peers of the cluster DNS.
+      to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+
+      # -- Target ports of the cluster DNS.
+      ports: [53]
+
+    jwks:
+      # -- (list) Peers of the JWKS endpoint.
+      # REQUIRED when networkPolicy.enabled and networkPolicy.egress.enabled are true.
+      to: []
+      # Example:
+      # to:
+      #   - namespaceSelector:
+      #       matchLabels:
+      #         kubernetes.io/metadata.name: gateway
+
+      # -- Target ports of the JWKS endpoint (empty = the port resolved from envoy.gatewayToken.jwks).
+      # Set the container port when the JWKS endpoint is a Service with another target port.
+      ports: []

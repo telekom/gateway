@@ -87,7 +87,7 @@ sequenceDiagram
   Note over dcp,api: Observe: GET …?watch=true&resourceVersion=…<br/>Clean up: DELETE …
   dcp->>gw: HTTPS request with the Iris access token
   Note over gw: Validate the Iris JWT. Check the client.<br/>Mint the Gateway Token (LMS).<br/>Route to the management proxy.
-  gw->>sc: Forward the request over mTLS
+  gw->>sc: Forward the request over TLS
   rect rgba(191,69,32,0.08)
     Note over sc,kp: Management proxy pod
     Note over sc: Validate the Gateway Token.<br/>Remove the Authorization header.<br/>Set the Host to localhost.
@@ -107,7 +107,7 @@ cannot repair it. The platform deployment bootstraps and recovers the management
 [Bootstrap the management route with the platform deployment](#bootstrap-the-management-route-with-the-platform-deployment).
 
 The [management proxy guide](../developer/management-proxy.md) describes the implementation of the preferred candidate
-and the results of a proof of concept.
+and the results of a proof of concept and of an MVP.
 
 The pinned sources show the building blocks. A candidate stays unverified until it passes the checks in
 [Evidence required for product selection](#evidence-required-for-product-selection).
@@ -130,10 +130,19 @@ describes the bootstrap with Argo CD sync waves.
 on the management HTTPRoute run only in the kgateway proxy. A pod that calls the management proxy Service directly skips
 them. So the management proxy authenticates each request itself.
 
-Proposed: **the Envoy sidecar checks the LMS Gateway Token** that kgateway mints for the management route. kgateway
-authenticates to the sidecar with a client certificate from a [BackendConfigPolicy][kgateway-backend-tls]. cert-manager
-issues and renews the TLS certificate of the sidecar and the client certificate of kgateway. The gateway runtime already
-uses cert-manager for the source certificates of the key rotator. Verify that each target cluster provides it.
+Proposed: **the Envoy sidecar checks the LMS Gateway Token** that kgateway mints for the management route. Each hop
+between pods uses TLS, also inside the cluster: kgateway verifies the server certificate of the sidecar with a
+[BackendConfigPolicy][kgateway-backend-tls], and the sidecar fetches the JWKS over HTTPS. cert-manager issues and renews
+the TLS certificate of the sidecar. The gateway runtime already uses cert-manager for the source certificates of the key
+rotator. Verify that each target cluster provides it.
+
+The MVP postpones mutual TLS. With mutual TLS, kgateway also authenticates to the sidecar with a client certificate, and
+cert-manager issues that certificate too. The chart keeps this as an option that is off by default.
+
+The gateway signs the LMS Gateway Token for the management route with the signing key of all other routes. We do not use
+a separate signing key for the management route. An attacker with the signing key can already call each upstream of the
+zone with a valid Gateway Token. Access to the management route gives that attacker no additional gain. A separate key
+adds key management and rotation, but no protection.
 
 The internal wiki page [Cross-cluster Configuration][security-wiki] compares the token options. It also lists the risk
 measures and the hardening of the management proxy.
@@ -191,8 +200,9 @@ scope.
    without a token and with a valid token of a client that is not authorized. Make sure that no request reaches
    `kubectl proxy`.
 
-A proof of concept of the preferred candidate covers parts of items 1, 2, 3, 4 and 7. See
-[the management proxy guide](../developer/management-proxy.md#results-of-the-proof-of-concept).
+A proof of concept and an MVP of the preferred candidate cover parts of items 1, 2, 3, 4, 5 and 7. See the results of
+the [proof of concept](../developer/management-proxy.md#results-of-the-proof-of-concept) and of the
+[MVP](../developer/management-proxy.md#results-of-the-mvp).
 
 Gateway readiness and safe intermediate traffic configuration stay integration topics for the dCP and kgateway under ADR
 0004.

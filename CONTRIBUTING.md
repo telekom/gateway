@@ -15,11 +15,24 @@ Install these tools to run the local checks:
 - [REUSE](https://reuse.software/dev/#install) 6.0.0 or newer
 - [rumdl](https://rumdl.dev/getting-started/installation/) 0.3.0 or newer
 
-Run all repository checks:
+The lint of the management proxy also needs:
+
+- [Helm](https://helm.sh/docs/intro/install/) 3 or 4, with the
+  [helm-unittest](https://github.com/helm-unittest/helm-unittest#install) plugin 1.2.1 or newer
+- [ShellCheck](https://github.com/koalaman/shellcheck#installing)
+- [kubeconform](https://github.com/yannh/kubeconform#installation) 0.8.0 or newer
+- [kube-linter](https://docs.kubelinter.io/#/?id=installing-kubelinter) 0.8.3 or newer
+- [yq](https://github.com/mikefarah/yq) 4 and `curl`
+- Internet access, to download the Kubernetes schemas and the CRDs
+
+Run the repository checks and the component lints:
 
 ```bash
 make check
 ```
+
+`make check-all` also runs the component tests. They also need Docker and [Go](https://go.dev/doc/install) in the
+version of `management-proxy/test/go.mod`.
 
 Format Markdown files and fix lint issues where possible:
 

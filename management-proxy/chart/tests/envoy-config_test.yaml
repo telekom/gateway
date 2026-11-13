@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# The Envoy configuration is a string in the ConfigMap. test/sidecar_test.go tests its behaviour. These tests only check
+# the parts that change with the values.
+suite: Envoy configuration
+templates:
+  - configmap-envoy.yaml
+release:
+  name: test
+  namespace: management
+tests:
+  - it: requires no client certificate without mutual TLS
+    values:
+      - ../ci/cert-manager-values.yaml
+    asserts:
+      - matchRegex:
+          path: data["envoy.yaml"]
+          pattern: "require_client_certificate: false"
+      - notExists:
+          path: data["sds-client-ca.yaml"]
+
+  - it: requires a client certificate of the kgateway client DNS name with mutual TLS
+    values:
+      - ../ci/cert-manager-mtls-values.yaml
+    asserts:
+      - matchRegex:
+          path: data["envoy.yaml"]
+          pattern: "require_client_certificate: true"
+      - matchRegex:
+          path: data["sds-client-ca.yaml"]
+          pattern: 'matcher: \{ exact: "test-management-proxy-client.management" \}'
+
+  - it: has no request binding condition when request binding is disabled
+    values:
+      - ../ci/existing-secrets-values.yaml
+    asserts:
+      - notMatchRegex:
+          path: data["envoy.yaml"]
+          pattern: "condition:"

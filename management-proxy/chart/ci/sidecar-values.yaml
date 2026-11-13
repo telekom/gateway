@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# Value profile of the sidecar test in test/sidecar_test.go. The test runs the sidecar in Docker with an HTTPS JWKS
+# server and an echo server in place of kubectl proxy. It sets the JWKS address and mutual TLS.
+allowedClients: [dcp-client, second-client]
+envoy:
+  gatewayToken:
+    issuer: https://gateway.test/auth/realms/test
+    audiences: [management-proxy]
+    jwks:
+      uri: https://jwks.test:8080/jwks.json
+      caConfigMap: jwks-ca
+tls:
+  certManager:
+    enabled: false
+  serverCertificate:
+    secretName: management-proxy-tls
+  clientCertificate:
+    caSecretName: gateway-ca
+    dnsName: gateway.test
+networkPolicy:
+  enabled: false
+# The sidecar test runs without kgateway.
+route:
+  enabled: false
+rbac:
+  namespaces: [routes]

@@ -18,7 +18,10 @@ help: ## Display this help.
 ##@ Checks
 
 .PHONY: check
-check: reuse markdown-lint ## Run all repository checks.
+check: reuse markdown-lint management-proxy-lint ## Run the repository checks and the component lints. Needs no Docker.
+
+.PHONY: check-all
+check-all: reuse markdown-lint management-proxy ## Run all checks, also the component tests. Needs Docker.
 
 .PHONY: reuse
 reuse: ## Check REUSE compliance.
@@ -27,6 +30,14 @@ reuse: ## Check REUSE compliance.
 .PHONY: markdown-lint
 markdown-lint: ## Lint Markdown files.
 	rumdl check .
+
+.PHONY: management-proxy-lint
+management-proxy-lint: ## Lint the management proxy, see management-proxy/Makefile.
+	$(MAKE) -C management-proxy lint
+
+.PHONY: management-proxy
+management-proxy: ## Run all checks of the management proxy, see management-proxy/Makefile.
+	$(MAKE) -C management-proxy check
 
 ##@ Formatting
 
