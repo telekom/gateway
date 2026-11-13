@@ -1,0 +1,112 @@
+docs/AGENTS.md
+  s_31fd5c77038b6f::t_e7056741ddb175 1-28
+lefthook.yml
+  s_0739d1fd3fa368::t_9b8171e1f919f2 18
+AGENTS.md
+  s_31fd5c77038b6f::t_d880674b183ddc 21-22
+docs/README.md
+  s_31fd5c77038b6f::t_a4d68959cec733 7,9
+  s_31fd5c77038b6f::t_93c6e5dfb331a6 5-6,8
+README.md
+  s_31fd5c77038b6f::t_ea6c33eafa84c7 23
+docs/decisions/0004-use-an-oauth-proxy-for-cross-cluster-configuration.md
+  s_31fd5c77038b6f::t_b68ad6982b8419 30,180-205,207-210,283,286-311
+  s_31fd5c77038b6f::t_5414ead49ee92a 127-130,153,157,170
+  s_31fd5c77038b6f::t_9d58f1a7ec5769 154
+  s_31fd5c77038b6f::t_a66affccf7098d 340-343,346
+  s_31fd5c77038b6f::t_3c8ffd1bd76cdd 140-141,144
+  s_31fd5c77038b6f::t_93c6e5dfb331a6 284-285,357-358
+  s_91fcdbf7439cad::t_01d76ffc78923c 19-23,25,27-29,42,44-45,51,57-60,62-64,70-79,86-95,97-98,100-103,105-106,126,261-264,349-356
+  s_31fd5c77038b6f::t_caca2c4b57eaf7 31-39,80-85,96,99,104,108-109,113-122,125,131-139,142-143,145-152,155-156,158-169,171-176,179,211-260,277-282,312-329,331-338,344-345,366-371,374-376,392-395
+  s_31fd5c77038b6f::t_a4d68959cec733 206,362
+  h_052be7cb63ce69 4-11,46-47,124,273-276,339,385
+  s_31fd5c77038b6f::t_4baa29bcdcc3ed 383-384
+  s_328ffa27f9f9f9::t_25181877cfa435 1-3,12-18,24,26,40-41,43,48-50,52-56,61,65-69,107,110-112,123,265-272,330,347-348,359-361,363-365,372-373,377-382,386-391
+  s_31fd5c77038b6f::t_b84ea381de6b8e 177-178
+CONTRIBUTING.md
+  s_0739d1fd3fa368::t_02d3ba7532e413 54-55
+  s_0739d1fd3fa368::t_56d70799c6bc40 56
+  s_0739d1fd3fa368::t_9b8171e1f919f2 51
+docs/developer/management-proxy.md
+  h_052be7cb63ce69 1-8,57-91,99-191,199-255,263-287,295-313,321-340,348-416
+  s_31fd5c77038b6f::t_32f026d990ce4e 49-51
+  s_31fd5c77038b6f::t_2b5bdd9502f2e7 54-56,92-94
+  s_31fd5c77038b6f::t_06b86f846387b8 318-320,341-343
+  s_31fd5c77038b6f::t_a374ee283f75db 345-347
+  s_31fd5c77038b6f::t_13d82a0f748168 292-294,314-316
+  s_31fd5c77038b6f::t_a4d68959cec733 12-48,95,195,259,291,317,344
+  s_31fd5c77038b6f::t_17738ea21377bc 9-11
+  s_31fd5c77038b6f::t_93c6e5dfb331a6 52-53
+  s_31fd5c77038b6f::t_101347756cb4de 196-198,256-258
+  s_31fd5c77038b6f::t_411870708b207b 260-262,288-290
+  s_31fd5c77038b6f::t_a5d0e2dd17f631 96-98,192-194
+docs/decisions/0005-reuse-an-existing-kubernetes-api-proxy.md
+  s_31fd5c77038b6f::t_8c506034b57e5a 186
+  s_31fd5c77038b6f::t_9b2c3643263e04 64-67
+  s_328ffa27f9f9f9::t_25181877cfa435 1-3,12-58,60-63,112-122,140,142-185,187-192,196-235
+  s_31fd5c77038b6f::t_9037ee95d38c15 104-107
+  h_052be7cb63ce69 4-11,59,108,133-139
+  s_31fd5c77038b6f::t_5f5e36b71bc835 126
+  s_bdc296595dd835::t_b7156684bfd610 91-96
+  s_31fd5c77038b6f::t_b68ad6982b8419 68-77,80-90,97-103,109,141,195
+  s_31fd5c77038b6f::t_412cdae6e46ce7 127-132
+  s_31fd5c77038b6f::t_54e44af3b39395 125
+  s_bdc296595dd835::t_ab885647590f98 78-79
+  s_bdc296595dd835::t_1d6e224f01e768 110-111,193-194
+  s_31fd5c77038b6f::t_93c6e5dfb331a6 123-124
+docs/decisions/README.md
+  h_052be7cb63ce69 79-81
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.6",
+  "base_commit_sha": "41ff67359d14f0e68a4276655470eac56d3c8282",
+  "prompts": {},
+  "humans": {
+    "h_052be7cb63ce69": {
+      "author": "Niklas Beilmann <niklas.beilmann@telekom.de>"
+    }
+  },
+  "sessions": {
+    "s_0739d1fd3fa368": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "5896eef0-1a0a-43aa-9038-12a88f867879",
+        "model": "unknown"
+      },
+      "human_author": null
+    },
+    "s_31fd5c77038b6f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e73038d45ffe4u67m07qYiuvie",
+        "model": "github-copilot/claude-opus-5.5-long"
+      },
+      "human_author": null
+    },
+    "s_328ffa27f9f9f9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e7e14153cffeebVSEtHTMpC8dq",
+        "model": "github-copilot/gpt-6-astra-long"
+      },
+      "human_author": null
+    },
+    "s_91fcdbf7439cad": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e732be782ffeAnhmczMPUI1ixk",
+        "model": "github-copilot/claude-opus-5.5-long"
+      },
+      "human_author": null
+    },
+    "s_bdc296595dd835": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "8549180e-c617-42a4-94e6-9fe9cb2d559e",
+        "model": "unknown"
+      },
+      "human_author": null
+    }
+  }
+}

@@ -1,0 +1,67 @@
+docs/diagrams/route-configuration-flow.md
+  s_31fd5c77038b6f::t_35b77c34e6b429 69,87-124
+  h_052be7cb63ce69 1-9,14-68,72-74,76-83,85-86
+  h_052be7cb63ce69 10-13,70-71,75,84
+docs/decisions/0004-use-an-oauth-proxy-for-cross-cluster-configuration.md
+  s_31fd5c77038b6f::t_5414ead49ee92a 119-122,146,150,163
+  s_31fd5c77038b6f::t_a66affccf7098d 273-276,279
+  s_31fd5c77038b6f::t_4baa29bcdcc3ed 315-316
+  s_91fcdbf7439cad::t_01d76ffc78923c 11-15,17,19-21,34,36-37,43,49-52,54-56,62-71,78-87,89-90,92-95,97-98,118,223-226,282-290
+  h_052be7cb63ce69 38-39,272,317
+  s_328ffa27f9f9f9::t_25181877cfa435 1-10,16,18,32-33,35,40-42,44-48,53,57-61,99,102-104,115,227-234,263,280-281,291-297,304-305,309-314,318-323
+  s_31fd5c77038b6f::t_caca2c4b57eaf7 22-31,72-77,88,91,96,100-101,105-114,117,123-145,148-149,151-162,164-222,239-262,264-271,277-278,298-303,306-308,324-327
+  s_31fd5c77038b6f::t_9d58f1a7ec5769 147
+  h_052be7cb63ce69 116,235-238
+docs/decisions/0005-reuse-an-existing-kubernetes-api-proxy.md
+  s_328ffa27f9f9f9::t_d4b754cae5547a 202-204,238-240
+  s_31fd5c77038b6f::t_412cdae6e46ce7 129-134
+  h_052be7cb63ce69 51,61-65,119,135-154,159-167,175-176,184-191,205-237
+  s_328ffa27f9f9f9::t_72ec2a617f7faa 181-183,192-194
+  s_31fd5c77038b6f::t_5f5e36b71bc835 128
+  s_328ffa27f9f9f9::t_844fbb1cd6b049 172-174,177-179
+  s_328ffa27f9f9f9::t_25181877cfa435 1-50,52-55,66-118,155,171,180,195,201,241-348
+  s_31fd5c77038b6f::t_9b2c3643263e04 56-60
+  s_31fd5c77038b6f::t_54e44af3b39395 120-127
+  s_328ffa27f9f9f9::t_51ffc7dd069969 156-158,168-170
+  s_328ffa27f9f9f9::t_319aa13651a5e0 196-200
+docs/README.md
+  s_328ffa27f9f9f9::t_25181877cfa435 8-9
+  s_328ffa27f9f9f9::t_f532fb130b50e2 10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.6",
+  "base_commit_sha": "bbf4e51c0267d333911ec5894a2d875b2b8da677",
+  "prompts": {},
+  "humans": {
+    "h_052be7cb63ce69": {
+      "author": "Niklas Beilmann <niklas.beilmann@telekom.de>"
+    }
+  },
+  "sessions": {
+    "s_31fd5c77038b6f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e73038d45ffe4u67m07qYiuvie",
+        "model": "github-copilot/claude-opus-5.5-long"
+      },
+      "human_author": null
+    },
+    "s_328ffa27f9f9f9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e7e14153cffeebVSEtHTMpC8dq",
+        "model": "github-copilot/gpt-6-astra-long"
+      },
+      "human_author": null
+    },
+    "s_91fcdbf7439cad": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e732be782ffeAnhmczMPUI1ixk",
+        "model": "github-copilot/claude-opus-5.5-long"
+      },
+      "human_author": null
+    }
+  }
+}
