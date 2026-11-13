@@ -1,0 +1,257 @@
+# SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# The chart refuses to render unsafe or incomplete values. Each test changes the cert-manager profile.
+suite: refused values
+values:
+  - ../ci/cert-manager-values.yaml
+release:
+  namespace: management
+tests:
+  - it: refuses a JWKS endpoint without https
+    set:
+      envoy.gatewayToken.jwks.uri: http://gateway.example.com/certs
+    asserts:
+      - failedTemplate:
+          errorPattern: envoy.gatewayToken.jwks.uri must be an https URL
+
+  - it: refuses a JWKS endpoint with an IPv4 address
+    set:
+      envoy.gatewayToken.jwks.uri: https://192.0.2.1/certs
+    asserts:
+      - failedTemplate:
+          errorPattern: envoy.gatewayToken.jwks.uri must use a DNS name, not an IP address
+
+  - it: refuses a JWKS endpoint with an IPv6 address
+    set:
+      envoy.gatewayToken.jwks.uri: https://[2001:db8::1]:8443/certs
+    asserts:
+      - failedTemplate:
+          errorPattern: envoy.gatewayToken.jwks.uri must use a DNS name, not an IP address
+
+  - it: refuses a Gateway Token without a maximum lifetime
+    set:
+      envoy.gatewayToken.maxLifetime: ""
+    asserts:
+      - failedTemplate:
+          errorPattern: envoy.gatewayToken.maxLifetime is required
+
+  - it: refuses an Envoy duration in the Go format, which Envoy refuses at startup
+    set:
+      envoy.streamIdleTimeout: 15m
+    asserts:
+      - failedTemplate:
+          errorPattern: envoy.streamIdleTimeout must be a number of seconds with the suffix s, for example 600s, not "15m"
+
+  - it: refuses an Envoy duration without a unit
+    set:
+      envoy.gatewayToken.jwks.cacheDuration: 300
+    asserts:
+      - failedTemplate:
+          errorPattern: envoy.gatewayToken.jwks.cacheDuration must be a number of seconds with the suffix s, for example 600s, not "300"
+
+  - it: refuses an Envoy duration in the Go format for the maximum stream duration
+    set:
+      envoy.maxStreamDuration: 1h
+    asserts:
+      - failedTemplate:
+          errorPattern: envoy.maxStreamDuration must be a number of seconds with the suffix s
+
+  - it: refuses an Envoy duration in the Go format for the token lifetime
+    set:
+      envoy.gatewayToken.maxLifetime: 10m
+    asserts:
+      - failedTemplate:
+          errorPattern: envoy.gatewayToken.maxLifetime must be a number of seconds with the suffix s
+
+  - it: refuses an empty list of allowed clients
+    set:
+      allowedClients: []
+    asserts:
+      - failedTemplate:
+          errorPattern: allowedClients needs at least one client ID
+
+  - it: refuses an empty list of API groups
+    set:
+      kubectlProxy.apiGroups: []
+    asserts:
+      - failedTemplate:
+          errorPattern: kubectlProxy.apiGroups needs at least one API group
+
+  - it: refuses a path prefix with a trailing slash
+    set:
+      pathPrefix: /management/
+    asserts:
+      - failedTemplate:
+          errorPattern: pathPrefix must start with a slash and must not end with a slash
+
+  - it: refuses a shutdown delay that does not end before the termination grace period
+    set:
+      deployment.shutdownDelaySeconds: 30
+      deployment.terminationGracePeriodSeconds: 30
+    asserts:
+      - failedTemplate:
+          errorPattern: deployment.terminationGracePeriodSeconds must be greater than deployment.shutdownDelaySeconds
+
+  - it: refuses an empty list of RBAC namespaces
+    set:
+      rbac.namespaces: []
+    asserts:
+      - failedTemplate:
+          errorPattern: rbac.namespaces needs at least one namespace
+
+  - it: refuses a Role in the release namespace
+    set:
+      rbac.namespaces: [management]
+    asserts:
+      - failedTemplate:
+          errorPattern: rbac.namespaces must not contain management
+
+  - it: refuses a Role in the namespace of the Gateway and its GatewayExtensions
+    set:
+      rbac.namespaces: [gateway]
+    asserts:
+      - failedTemplate:
+          errorPattern: rbac.namespaces must not contain gateway
+
+  - it: refuses an empty RBAC namespace, which Helm would replace with the release namespace
+    set:
+      rbac.namespaces: [""]
+    asserts:
+      - failedTemplate:
+          errorPattern: rbac.namespaces must contain only valid namespace names, not ""
+
+  - it: refuses an invalid RBAC namespace
+    set:
+      rbac.namespaces: [Routes_A]
+    asserts:
+      - failedTemplate:
+          errorPattern: rbac.namespaces must contain only valid namespace names, not "Routes_A"
+
+  - it: refuses an RBAC namespace that is not a string, even when the protected namespace has the same name
+    set:
+      route.parentRefs: [{name: gateway, namespace: "true"}]
+      rbac.namespaces: [true]
+    asserts:
+      - failedTemplate:
+          errorPattern: rbac.namespaces must contain only valid namespace names, not "true"
+
+  - it: refuses a number as RBAC namespace, even when the release namespace has the same name
+    release:
+      namespace: "123"
+    set:
+      rbac.namespaces: [123]
+    asserts:
+      - failedTemplate:
+          errorPattern: rbac.namespaces must contain only valid namespace names, not "123"
+
+  - it: refuses a route without issuers
+    set:
+      route.issuers: []
+    asserts:
+      - failedTemplate:
+          errorPattern: route.issuers is required when the route is enabled
+
+  - it: refuses an issuer entry without issuer
+    set:
+      route.issuers: [{clientClaim: azp}]
+    asserts:
+      - failedTemplate:
+          errorPattern: route.issuers\[\].issuer is required
+
+  - it: refuses an issuer client that is not an allowed client
+    set:
+      route.issuers: [{issuer: https://idp.example.com, clients: [other-client]}]
+    asserts:
+      - failedTemplate:
+          errorPattern: "route.issuers: the client other-client is not in allowedClients"
+
+  - it: refuses mutual TLS without cert-manager and without a client Secret
+    set:
+      tls.certManager.enabled: false
+      tls.serverCertificate.secretName: server
+      tls.clientCertificate.enabled: true
+    asserts:
+      - failedTemplate:
+          errorPattern: tls.clientCertificate.secretName is required
+
+  - it: refuses a Gateway Token without issuer
+    set:
+      envoy.gatewayToken.issuer: ""
+    asserts:
+      - failedTemplate:
+          errorPattern: envoy.gatewayToken.issuer is required
+
+  - it: refuses a Role in the namespace of the JWT GatewayExtension
+    set:
+      route.jwtExtensionRef.namespace: auth
+      rbac.namespaces: [auth]
+    asserts:
+      - failedTemplate:
+          errorPattern: rbac.namespaces must not contain auth
+
+  - it: refuses a Role in the namespace of the ext_proc GatewayExtension
+    set:
+      route.extProcExtensionRef.namespace: token
+      rbac.namespaces: [token]
+    asserts:
+      - failedTemplate:
+          errorPattern: rbac.namespaces must not contain token
+
+  - it: refuses an egress policy without API server CIDRs
+    set:
+      networkPolicy.egress.apiServer.cidrs: []
+    asserts:
+      - failedTemplate:
+          errorPattern: networkPolicy.egress.apiServer.cidrs is required
+
+  - it: refuses an egress policy without a JWKS destination
+    set:
+      networkPolicy.egress.jwks.to: []
+    asserts:
+      - failedTemplate:
+          errorPattern: networkPolicy.egress.jwks.to is required
+
+  # An empty list of peers or ports in a NetworkPolicy rule allows all peers or ports.
+  - it: refuses an egress policy without API server ports
+    set:
+      networkPolicy.egress.apiServer.ports: []
+    asserts:
+      - failedTemplate:
+          errorPattern: networkPolicy.egress.apiServer.ports is required
+
+  - it: refuses an egress policy without DNS peers
+    set:
+      networkPolicy.egress.dns.to: []
+    asserts:
+      - failedTemplate:
+          errorPattern: networkPolicy.egress.dns.to is required
+
+  - it: refuses an egress policy without DNS ports
+    set:
+      networkPolicy.egress.dns.ports: []
+    asserts:
+      - failedTemplate:
+          errorPattern: networkPolicy.egress.dns.ports is required
+
+  - it: refuses an empty API server port
+    set:
+      networkPolicy.egress.apiServer.ports: [443, ""]
+    asserts:
+      - failedTemplate:
+          errorPattern: networkPolicy.egress.apiServer.ports must not contain an empty port
+
+  - it: refuses an empty DNS port
+    set:
+      networkPolicy.egress.dns.ports: [null]
+    asserts:
+      - failedTemplate:
+          errorPattern: networkPolicy.egress.dns.ports must not contain an empty port
+
+  - it: refuses an empty JWKS port
+    set:
+      networkPolicy.egress.jwks.ports: [""]
+    asserts:
+      - failedTemplate:
+          errorPattern: networkPolicy.egress.jwks.ports must not contain an empty port

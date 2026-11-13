@@ -1,0 +1,51 @@
+# SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+#
+# SPDX-License-Identifier: Apache-2.0
+
+suite: cert-manager certificates
+templates:
+  - certificates.yaml
+release:
+  name: test
+  namespace: management
+tests:
+  - it: creates the server certificate for the DNS names of the Service
+    values:
+      - ../ci/cert-manager-values.yaml
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: spec.secretName
+          value: test-management-proxy-server
+      - equal:
+          path: spec.issuerRef
+          value: { name: gateway-ca, kind: Issuer, group: cert-manager.io }
+      - equal:
+          path: spec.dnsNames
+          value:
+            - test-management-proxy.management.svc
+            - test-management-proxy.management.svc.cluster.local
+            - test-management-proxy.management
+            - test-management-proxy
+
+  - it: also creates the client certificate of kgateway with mutual TLS
+    values:
+      - ../ci/cert-manager-mtls-values.yaml
+    documentSelector:
+      path: metadata.name
+      value: test-management-proxy-client
+    asserts:
+      - equal:
+          path: spec.dnsNames
+          value: [test-management-proxy-client.management]
+      - equal:
+          path: spec.usages
+          value: [client auth, digital signature]
+
+  - it: creates no certificates for existing Secrets
+    values:
+      - ../ci/existing-secrets-values.yaml
+    asserts:
+      - hasDocuments:
+          count: 0
