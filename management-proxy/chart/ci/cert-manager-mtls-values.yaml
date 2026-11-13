@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# Value profile: mutual TLS with cert-manager, and a JWKS endpoint with a custom CA.
+allowedClients: [dcp-client]
+envoy:
+  gatewayToken:
+    issuer: https://gateway.example.com/auth/realms/default
+    jwks:
+      uri: https://gateway.example.com:8443/auth/realms/default/protocol/openid-connect/certs
+      caConfigMap: gateway-ca
+tls:
+  certManager:
+    issuerRef:
+      name: test-ca
+      kind: ClusterIssuer
+  clientCertificate:
+    enabled: true
+rbac:
+  namespaces: [gateway-routes]
+networkPolicy:
+  egress:
+    apiServer:
+      cidrs: [10.0.0.1/32]
+    jwks:
+      to:
+        - ipBlock:
+            cidr: 10.0.0.0/8
+route:
+  parentRefs:
+    - name: gateway
+      namespace: gateway
+  jwtExtensionRef:
+    name: caller-jwt
+    namespace: gateway
+  extProcExtensionRef:
+    name: gateway-token
+    namespace: gateway
+  issuers:
+    - issuer: https://idp.example.com/auth/realms/default

@@ -1,0 +1,97 @@
+{{/*
+SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+
+SPDX-License-Identifier: Apache-2.0
+*/}}
+{{- if .Values.route.enabled }}
+{{- $fullname := include "management-proxy.fullname" . }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ $fullname }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "management-proxy.labels" . | nindent 4 }}
+spec:
+  parentRefs:
+    {{- include "management-proxy.requiredList" (dict "value" .Values.route.parentRefs "message" "route.parentRefs is required when the route is enabled") | fromJsonArray | toYaml | nindent 4 }}
+  {{- with .Values.route.hostnames }}
+  hostnames:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ include "management-proxy.pathPrefix" . }}
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /
+      backendRefs:
+        - name: {{ $fullname }}
+          port: {{ .Values.tls.port }}
+---
+apiVersion: gateway.kgateway.dev/v1alpha1
+kind: TrafficPolicy
+metadata:
+  name: {{ $fullname }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "management-proxy.labels" . | nindent 4 }}
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: {{ $fullname }}
+  # Keep watches open. Do not configure a retry: a retried watch hides the end of the stream from the client.
+  timeouts:
+    request: 0s
+    streamIdle: {{ .Values.route.streamIdleTimeout }}
+  jwtAuth:
+    extensionRef:
+      {{- include "management-proxy.extensionRef" (dict "ref" .Values.route.jwtExtensionRef "field" "route.jwtExtensionRef") | nindent 6 }}
+  rbac:
+    action: Allow
+    policy:
+      # One expression for each issuer. kgateway allows a request when one expression is true.
+      matchExpressions:
+        {{- range include "management-proxy.routeMatchExpressions" . | fromJsonArray }}
+        - {{ . | toJson }}
+        {{- end }}
+  extProc:
+    extensionRef:
+      {{- include "management-proxy.extensionRef" (dict "ref" .Values.route.extProcExtensionRef "field" "route.extProcExtensionRef") | nindent 6 }}
+---
+apiVersion: gateway.kgateway.dev/v1alpha1
+kind: BackendConfigPolicy
+metadata:
+  name: {{ $fullname }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "management-proxy.labels" . | nindent 4 }}
+spec:
+  targetRefs:
+    - group: ""
+      kind: Service
+      name: {{ $fullname }}
+  tls:
+    {{- if .Values.tls.clientCertificate.enabled }}
+    # Mutual TLS. The Secret holds the client certificate of kgateway and the CA that verifies the sidecar.
+    secretRef:
+      name: {{ include "management-proxy.clientSecretName" . }}
+    {{- else }}
+    # kgateway reads only ca.crt from the Secret and sends no client certificate.
+    secretRef:
+      name: {{ include "management-proxy.serverCASecretName" . }}
+    simpleTLS: true
+    {{- end }}
+    {{- $sni := include "management-proxy.serviceDNSNames" . | fromJsonArray | first }}
+    sni: {{ $sni }}
+    verifySubjectAltNames:
+      - {{ $sni }}
+    parameters:
+      minVersion: "1.2"
+{{- end }}

@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+#
+# SPDX-License-Identifier: Apache-2.0
+
+suite: PodDisruptionBudget
+templates:
+  - pdb.yaml
+values:
+  - ../ci/cert-manager-values.yaml
+release:
+  name: test
+  namespace: management
+tests:
+  - it: allows one voluntary disruption at a time, also with one replica
+    set:
+      deployment.replicaCount: 1
+    asserts:
+      - equal:
+          path: spec.maxUnavailable
+          value: 1
+      - notExists:
+          path: spec.minAvailable
