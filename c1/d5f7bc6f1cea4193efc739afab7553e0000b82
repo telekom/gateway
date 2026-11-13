@@ -1,0 +1,19 @@
+token-minter/README.md
+  s_4feae5eff982b8::t_cb836cdfea451e 10-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.7",
+  "base_commit_sha": "c1d5f7bc6f1cea4193efc739afab7553e0000b82",
+  "prompts": {},
+  "sessions": {
+    "s_4feae5eff982b8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e2c1f5836ffexshewLqpr9amMw",
+        "model": "claude-opus-5.5"
+      },
+      "human_author": "Miká Juznik <mika.juznik@telekom.de>"
+    }
+  }
+}
