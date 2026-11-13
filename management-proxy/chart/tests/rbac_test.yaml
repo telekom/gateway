@@ -1,0 +1,48 @@
+# SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+#
+# SPDX-License-Identifier: Apache-2.0
+
+suite: RBAC of the proxy ServiceAccount
+templates:
+  - rbac.yaml
+values:
+  - ../ci/existing-secrets-values.yaml
+release:
+  name: test
+  namespace: management
+tests:
+  - it: creates the ServiceAccount and a Role and a RoleBinding in each namespace
+    asserts:
+      - hasDocuments:
+          count: 5
+      - containsDocument:
+          kind: ServiceAccount
+          apiVersion: v1
+          name: test-management-proxy
+          namespace: management
+          any: true
+      - containsDocument:
+          kind: Role
+          apiVersion: rbac.authorization.k8s.io/v1
+          name: test-management-proxy
+          namespace: routes-a
+          any: true
+      - containsDocument:
+          kind: Role
+          apiVersion: rbac.authorization.k8s.io/v1
+          name: test-management-proxy
+          namespace: routes-b
+          any: true
+
+  - it: binds each Role to the ServiceAccount in the release namespace
+    documentSelector:
+      path: kind
+      value: RoleBinding
+      matchMany: true
+    asserts:
+      - equal:
+          path: subjects
+          value:
+            - kind: ServiceAccount
+              name: test-management-proxy
+              namespace: management

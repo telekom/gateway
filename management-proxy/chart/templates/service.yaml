@@ -1,0 +1,20 @@
+{{/*
+SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+
+SPDX-License-Identifier: Apache-2.0
+*/}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "management-proxy.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "management-proxy.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "management-proxy.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: https
+      port: {{ .Values.tls.port }}
+      targetPort: https

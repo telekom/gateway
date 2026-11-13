@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+#
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v2
+name: management-proxy
+description: >-
+  Authenticated Kubernetes API proxy that lets the distributed control plane configure the gateway resources of a
+  data-plane cluster. An Envoy sidecar validates the Gateway Token, and kubectl proxy forwards with a local
+  ServiceAccount.
+type: application
+version: 0.1.0
+# The preStop sleep action needs Kubernetes 1.30 or newer.
+kubeVersion: ">=1.30.0-0"
+home: https://github.com/telekom/gateway
+sources:
+  - https://github.com/telekom/gateway/tree/main/management-proxy
+maintainers:
+  - name: Deutsche Telekom AG
+    email: opensource@telekom.de

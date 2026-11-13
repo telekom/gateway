@@ -1,0 +1,200 @@
+{{/*
+SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+
+SPDX-License-Identifier: Apache-2.0
+*/}}
+{{- $fullname := include "management-proxy.fullname" . }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $fullname }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "management-proxy.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.deployment.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "management-proxy.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/envoy-config: {{ include (print $.Template.BasePath "/configmap-envoy.yaml") . | sha256sum }}
+        {{- with .Values.deployment.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "management-proxy.labels" . | nindent 8 }}
+        {{- with .Values.deployment.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ $fullname }}
+      # Only kubectl-proxy mounts the ServiceAccount token, see the volume kube-api-access.
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      terminationGracePeriodSeconds: {{ .Values.deployment.terminationGracePeriodSeconds }}
+      {{- with .Values.deployment.priorityClassName }}
+      priorityClassName: {{ . }}
+      {{- end }}
+      {{- with .Values.deployment.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: envoy
+          image: {{ include "management-proxy.image" .Values.envoy.image }}
+          imagePullPolicy: {{ .Values.envoy.image.pullPolicy }}
+          args:
+            - --config-path
+            - /etc/envoy/envoy.yaml
+            - --log-level
+            - {{ .Values.envoy.logLevel }}
+            - --disable-hot-restart
+          ports:
+            - name: https
+              containerPort: {{ .Values.tls.port }}
+            - name: health
+              containerPort: {{ .Values.envoy.healthPort }}
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: health
+            periodSeconds: 5
+          lifecycle:
+            # Endpoints and gateways stop to send new requests before Envoy stops. Envoy then ends the open watches,
+            # and the clients resume them on another replica.
+            preStop:
+              sleep:
+                seconds: {{ .Values.deployment.shutdownDelaySeconds }}
+          volumeMounts:
+            - name: envoy-config
+              mountPath: /etc/envoy
+              readOnly: true
+            - name: tls
+              mountPath: /etc/management-proxy/tls
+              readOnly: true
+            {{- if .Values.tls.clientCertificate.enabled }}
+            - name: client-ca
+              mountPath: /etc/management-proxy/client-ca
+              readOnly: true
+            {{- end }}
+            {{- if .Values.envoy.gatewayToken.jwks.caConfigMap }}
+            - name: jwks-ca
+              mountPath: /etc/management-proxy/jwks-ca
+              readOnly: true
+            {{- end }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            {{- toYaml .Values.envoy.resources | nindent 12 }}
+        - name: kubectl-proxy
+          image: {{ include "management-proxy.image" .Values.kubectlProxy.image }}
+          imagePullPolicy: {{ .Values.kubectlProxy.image.pullPolicy }}
+          # Listens on the loopback address only, so only the sidecar can reach it.
+          args:
+            - proxy
+            - --address=127.0.0.1
+            - --port=8001
+            - --accept-hosts=^localhost$
+            - --accept-paths={{ include "management-proxy.acceptPaths" . }}
+          env:
+            - name: HOME
+              value: /tmp
+          lifecycle:
+            # Serve the requests that Envoy still forwards while it stops.
+            preStop:
+              sleep:
+                seconds: {{ add .Values.deployment.shutdownDelaySeconds 5 }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: kube-api-access
+              mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+              readOnly: true
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            {{- toYaml .Values.kubectlProxy.resources | nindent 12 }}
+      volumes:
+        - name: envoy-config
+          configMap:
+            name: {{ $fullname }}-envoy
+        - name: tls
+          secret:
+            secretName: {{ include "management-proxy.serverSecretName" . }}
+            defaultMode: 0440
+            items:
+              - { key: tls.crt, path: tls.crt }
+              - { key: tls.key, path: tls.key }
+        {{- if .Values.tls.clientCertificate.enabled }}
+        - name: client-ca
+          secret:
+            secretName: {{ include "management-proxy.clientCASecretName" . }}
+            defaultMode: 0440
+            items:
+              - { key: ca.crt, path: ca.crt }
+        {{- end }}
+        {{- with .Values.envoy.gatewayToken.jwks.caConfigMap }}
+        - name: jwks-ca
+          configMap:
+            name: {{ . }}
+            items:
+              - { key: ca.crt, path: ca.crt }
+        {{- end }}
+        - name: tmp
+          emptyDir:
+            sizeLimit: 16Mi
+        # The same content as the automatic token mount of Kubernetes. The kubelet rotates the token, and client-go in
+        # kubectl proxy reads the file again.
+        - name: kube-api-access
+          projected:
+            sources:
+              - serviceAccountToken:
+                  path: token
+                  expirationSeconds: {{ .Values.kubectlProxy.tokenExpirationSeconds }}
+              - configMap:
+                  name: kube-root-ca.crt
+                  items:
+                    - { key: ca.crt, path: ca.crt }
+              - downwardAPI:
+                  items:
+                    - path: namespace
+                      fieldRef:
+                        fieldPath: metadata.namespace
+      {{- with .Values.deployment.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.deployment.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.deployment.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      topologySpreadConstraints:
+        {{- if .Values.deployment.topologySpreadConstraints }}
+        {{- toYaml .Values.deployment.topologySpreadConstraints | nindent 8 }}
+        {{- else }}
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              {{- include "management-proxy.selectorLabels" . | nindent 14 }}
+        {{- end }}
