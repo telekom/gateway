@@ -1,0 +1,60 @@
+{{/*
+SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+
+SPDX-License-Identifier: Apache-2.0
+*/}}
+{{- if .Values.tls.certManager.enabled }}
+{{- $fullname := include "management-proxy.fullname" . }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ $fullname }}-server
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "management-proxy.labels" . | nindent 4 }}
+spec:
+  secretName: {{ include "management-proxy.serverSecretName" . }}
+  issuerRef:
+    name: {{ required "tls.certManager.issuerRef.name is required when cert-manager is enabled" .Values.tls.certManager.issuerRef.name }}
+    kind: {{ .Values.tls.certManager.issuerRef.kind }}
+    group: {{ .Values.tls.certManager.issuerRef.group }}
+  dnsNames:
+    {{- include "management-proxy.serviceDNSNames" . | fromJsonArray | toYaml | nindent 4 }}
+  duration: {{ .Values.tls.certManager.duration }}
+  renewBefore: {{ .Values.tls.certManager.renewBefore }}
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  usages:
+    - server auth
+    - digital signature
+{{- if .Values.tls.clientCertificate.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ $fullname }}-client
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "management-proxy.labels" . | nindent 4 }}
+spec:
+  # kgateway presents this certificate to the sidecar, see the BackendConfigPolicy of the management route.
+  secretName: {{ include "management-proxy.clientSecretName" . }}
+  issuerRef:
+    name: {{ .Values.tls.certManager.issuerRef.name }}
+    kind: {{ .Values.tls.certManager.issuerRef.kind }}
+    group: {{ .Values.tls.certManager.issuerRef.group }}
+  dnsNames:
+    - {{ include "management-proxy.clientDNSName" . }}
+  duration: {{ .Values.tls.certManager.duration }}
+  renewBefore: {{ .Values.tls.certManager.renewBefore }}
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  usages:
+    - client auth
+    - digital signature
+{{- end }}
+{{- end }}

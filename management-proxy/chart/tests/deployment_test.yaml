@@ -1,0 +1,94 @@
+# SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+#
+# SPDX-License-Identifier: Apache-2.0
+
+suite: Deployment
+templates:
+  - deployment.yaml
+  # The Deployment includes the checksum of the Envoy configuration.
+  - configmap-envoy.yaml
+values:
+  - ../ci/cert-manager-values.yaml
+release:
+  name: test
+  namespace: management
+tests:
+  - it: mounts the ServiceAccount token only in kubectl-proxy, with a lifetime of one hour
+    template: deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.automountServiceAccountToken
+          value: false
+      - notContains:
+          path: spec.template.spec.containers[?(@.name == "envoy")].volumeMounts
+          content:
+            name: kube-api-access
+            mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+            readOnly: true
+      - contains:
+          path: spec.template.spec.containers[?(@.name == "kubectl-proxy")].volumeMounts
+          content:
+            name: kube-api-access
+            mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+            readOnly: true
+      - equal:
+          path: spec.template.spec.volumes[?(@.name == "kube-api-access")].projected.sources[0].serviceAccountToken
+          value:
+            path: token
+            expirationSeconds: 3600
+
+  - it: lets kubectl proxy listen on the loopback address and forward only discovery and the configured API groups
+    template: deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name == "kubectl-proxy")].args
+          value:
+            - proxy
+            - --address=127.0.0.1
+            - --port=8001
+            - --accept-hosts=^localhost$
+            - --accept-paths=^/(version|api|api/v1|apis|openapi/.*|apis/(gateway\.networking\.k8s\.io|gateway\.kgateway\.dev)(/.*)?)$
+
+  - it: does not mount the client CA without mutual TLS
+    template: deployment.yaml
+    asserts:
+      - notContains:
+          path: spec.template.spec.volumes
+          content:
+            name: client-ca
+          any: true
+
+  - it: mounts the client CA from the server Secret with mutual TLS
+    template: deployment.yaml
+    values:
+      - ../ci/cert-manager-mtls-values.yaml
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: client-ca
+            secret:
+              secretName: test-management-proxy-server
+              defaultMode: 0440
+              items:
+                - { key: ca.crt, path: ca.crt }
+
+  - it: mounts the CA of the JWKS endpoint in Envoy when a CA ConfigMap is set
+    template: deployment.yaml
+    values:
+      - ../ci/cert-manager-mtls-values.yaml
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: jwks-ca
+            configMap:
+              name: gateway-ca
+              items:
+                - { key: ca.crt, path: ca.crt }
+      - contains:
+          path: spec.template.spec.containers[?(@.name == "envoy")].volumeMounts
+          content:
+            name: jwks-ca
+            mountPath: /etc/management-proxy/jwks-ca
+            readOnly: true

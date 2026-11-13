@@ -1,0 +1,126 @@
+# SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# The chart refuses to render unsafe or incomplete values. Each test changes the cert-manager profile.
+suite: refused values
+values:
+  - ../ci/cert-manager-values.yaml
+release:
+  namespace: management
+tests:
+  - it: refuses a JWKS endpoint without https
+    set:
+      envoy.gatewayToken.jwks.uri: http://gateway.example.com/certs
+    asserts:
+      - failedTemplate:
+          errorPattern: envoy.gatewayToken.jwks.uri must be an https URL
+
+  - it: refuses an empty list of allowed clients
+    set:
+      allowedClients: []
+    asserts:
+      - failedTemplate:
+          errorPattern: allowedClients needs at least one client ID
+
+  - it: refuses an empty list of API groups
+    set:
+      kubectlProxy.apiGroups: []
+    asserts:
+      - failedTemplate:
+          errorPattern: kubectlProxy.apiGroups needs at least one API group
+
+  - it: refuses a path prefix with a trailing slash
+    set:
+      pathPrefix: /management/
+    asserts:
+      - failedTemplate:
+          errorPattern: pathPrefix must start with a slash and must not end with a slash
+
+  - it: refuses an empty list of RBAC namespaces
+    set:
+      rbac.namespaces: []
+    asserts:
+      - failedTemplate:
+          errorPattern: rbac.namespaces needs at least one namespace
+
+  - it: refuses a Role in the release namespace
+    set:
+      rbac.namespaces: [management]
+    asserts:
+      - failedTemplate:
+          errorPattern: rbac.namespaces must not contain management
+
+  - it: refuses a Role in the namespace of the Gateway and its GatewayExtensions
+    set:
+      rbac.namespaces: [gateway]
+    asserts:
+      - failedTemplate:
+          errorPattern: rbac.namespaces must not contain gateway
+
+  - it: refuses a route without issuers
+    set:
+      route.issuers: []
+    asserts:
+      - failedTemplate:
+          errorPattern: route.issuers is required when the route is enabled
+
+  - it: refuses an issuer entry without issuer
+    set:
+      route.issuers: [{clientClaim: azp}]
+    asserts:
+      - failedTemplate:
+          errorPattern: route.issuers\[\].issuer is required
+
+  - it: refuses an issuer client that is not an allowed client
+    set:
+      route.issuers: [{issuer: https://idp.example.com, clients: [other-client]}]
+    asserts:
+      - failedTemplate:
+          errorPattern: "route.issuers: the client other-client is not in allowedClients"
+
+  - it: refuses mutual TLS without cert-manager and without a client Secret
+    set:
+      tls.certManager.enabled: false
+      tls.serverCertificate.secretName: server
+      tls.clientCertificate.enabled: true
+    asserts:
+      - failedTemplate:
+          errorPattern: tls.clientCertificate.secretName is required
+
+  - it: refuses a Gateway Token without issuer
+    set:
+      envoy.gatewayToken.issuer: ""
+    asserts:
+      - failedTemplate:
+          errorPattern: envoy.gatewayToken.issuer is required
+
+  - it: refuses a Role in the namespace of the JWT GatewayExtension
+    set:
+      route.jwtExtensionRef.namespace: auth
+      rbac.namespaces: [auth]
+    asserts:
+      - failedTemplate:
+          errorPattern: rbac.namespaces must not contain auth
+
+  - it: refuses a Role in the namespace of the ext_proc GatewayExtension
+    set:
+      route.extProcExtensionRef.namespace: token
+      rbac.namespaces: [token]
+    asserts:
+      - failedTemplate:
+          errorPattern: rbac.namespaces must not contain token
+
+  - it: refuses an egress policy without API server CIDRs
+    set:
+      networkPolicy.egress.apiServer.cidrs: []
+    asserts:
+      - failedTemplate:
+          errorPattern: networkPolicy.egress.apiServer.cidrs is required
+
+  - it: refuses an egress policy without a JWKS destination
+    set:
+      networkPolicy.egress.jwks.to: []
+    asserts:
+      - failedTemplate:
+          errorPattern: networkPolicy.egress.jwks.to is required

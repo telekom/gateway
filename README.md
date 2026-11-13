@@ -20,7 +20,8 @@ top-level directory when we add it.
 
 ```text
 .
-└── docs/   Documentation and decision records, see docs/README.md
+├── docs/               Documentation and decision records, see docs/README.md
+└── management-proxy/   Authenticated Kubernetes API proxy for the control plane, see management-proxy/README.md
 ```
 
 ## Contributing

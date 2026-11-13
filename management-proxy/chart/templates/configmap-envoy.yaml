@@ -1,0 +1,299 @@
+{{/*
+SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+
+SPDX-License-Identifier: Apache-2.0
+*/}}
+{{- $fullname := include "management-proxy.fullname" . }}
+{{- $resolvedJwks := include "management-proxy.jwks" . | fromJson }}
+{{- $prefix := include "management-proxy.pathPrefix" . }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullname }}-envoy
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "management-proxy.labels" . | nindent 4 }}
+data:
+  # The sidecar validates the Gateway Token and forwards each accepted request to kubectl proxy on the loopback
+  # address. It does not route. See docs/developer/management-proxy.md.
+  envoy.yaml: |
+    # File-based SDS needs a node ID and a cluster name.
+    node:
+      id: {{ $fullname }}
+      cluster: {{ $fullname }}
+    admin:
+      address:
+        socket_address: { address: 127.0.0.1, port_value: 9901 }
+    overload_manager:
+      resource_monitors:
+        - name: envoy.resource_monitors.global_downstream_max_connections
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.resource_monitors.downstream_connections.v3.DownstreamConnectionsConfig
+            max_active_downstream_connections: {{ .Values.envoy.maxDownstreamConnections }}
+    static_resources:
+      listeners:
+        - name: management-proxy
+          address:
+            socket_address: { address: 0.0.0.0, port_value: {{ .Values.tls.port }} }
+          filter_chains:
+            - transport_socket:
+                name: envoy.transport_sockets.tls
+                typed_config:
+                  "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
+                  require_client_certificate: {{ .Values.tls.clientCertificate.enabled }}
+                  common_tls_context:
+                    alpn_protocols: [h2, http/1.1]
+                    tls_params:
+                      tls_minimum_protocol_version: TLSv1_2
+                      # TLS 1.2 suites with forward secrecy. TLS 1.3 suites are not configurable.
+                      cipher_suites:
+                        - ECDHE-ECDSA-AES128-GCM-SHA256
+                        - ECDHE-RSA-AES128-GCM-SHA256
+                        - ECDHE-ECDSA-AES256-GCM-SHA384
+                        - ECDHE-RSA-AES256-GCM-SHA384
+                        - ECDHE-ECDSA-CHACHA20-POLY1305
+                        - ECDHE-RSA-CHACHA20-POLY1305
+                    # File-based SDS reloads the certificates when the kubelet updates the Secret volumes.
+                    tls_certificate_sds_secret_configs:
+                      - name: server
+                        sds_config:
+                          path_config_source: { path: /etc/envoy/sds-server.yaml }
+                    {{- if .Values.tls.clientCertificate.enabled }}
+                    validation_context_sds_secret_config:
+                      name: client-ca
+                      sds_config:
+                        path_config_source: { path: /etc/envoy/sds-client-ca.yaml }
+                    {{- end }}
+              filters:
+                - name: envoy.filters.network.http_connection_manager
+                  typed_config:
+                    "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                    stat_prefix: management_proxy
+                    codec_type: AUTO
+                    stream_idle_timeout: {{ .Values.envoy.streamIdleTimeout }}
+                    request_headers_timeout: 10s
+                    normalize_path: true
+                    merge_slashes: true
+                    path_with_escaped_slashes_action: REJECT_REQUEST
+                    # Keep the request ID of the gateway, so that one ID connects the logs of all hops.
+                    preserve_external_request_id: true
+                    common_http_protocol_options:
+                      idle_timeout: 3600s
+                      headers_with_underscores_action: REJECT_REQUEST
+                    access_log:
+                      - name: envoy.access_loggers.stdout
+                        typed_config:
+                          "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
+                          log_format:
+                            json_format:
+                              time: "%START_TIME%"
+                              request_id: "%REQ(X-REQUEST-ID)%"
+                              client_id: "%DYNAMIC_METADATA(envoy.filters.http.jwt_authn:gateway_token:{{ .Values.envoy.gatewayToken.clientClaim }})%"
+                              method: "%REQ(:METHOD)%"
+                              path: "%REQ(:PATH)%"
+                              code: "%RESPONSE_CODE%"
+                              flags: "%RESPONSE_FLAGS%"
+                              details: "%RESPONSE_CODE_DETAILS%"
+                              duration_ms: "%DURATION%"
+                              bytes_received: "%BYTES_RECEIVED%"
+                              bytes_sent: "%BYTES_SENT%"
+                              downstream: "%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%"
+                              downstream_peer_san: "%DOWNSTREAM_PEER_URI_SAN%%DOWNSTREAM_PEER_DNS_SAN%"
+                    route_config:
+                      name: kubernetes-api
+                      virtual_hosts:
+                        - name: kubernetes-api
+                          domains: ["*"]
+                          routes:
+                            - match: { prefix: "/" }
+                              # No retry_policy: a retried watch hides the end of the stream from the client.
+                              route:
+                                cluster: kubectl-proxy
+                                timeout: 0s
+                                host_rewrite_literal: localhost
+                                max_stream_duration:
+                                  max_stream_duration: {{ .Values.envoy.maxStreamDuration }}
+                              request_headers_to_remove: [authorization, proxy-authorization]
+                              request_headers_to_add:
+                                # The API server uses this header as the ID of its audit event.
+                                - header: { key: audit-id, value: "%REQ(X-REQUEST-ID)%" }
+                                  append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                    http_filters:
+                      - name: envoy.filters.http.jwt_authn
+                        typed_config:
+                          "@type": type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtAuthentication
+                          providers:
+                            gateway_token:
+                              issuer: {{ required "envoy.gatewayToken.issuer is required" .Values.envoy.gatewayToken.issuer | toJson }}
+                              {{- with .Values.envoy.gatewayToken.audiences }}
+                              audiences: {{ toJson . }}
+                              {{- end }}
+                              from_headers:
+                                - name: Authorization
+                                  value_prefix: "Bearer "
+                              # forward is false by default: the filter removes the token from the request.
+                              remote_jwks:
+                                http_uri:
+                                  uri: {{ $resolvedJwks.uri | toJson }}
+                                  cluster: jwks
+                                  timeout: 5s
+                                cache_duration: {{ .Values.envoy.gatewayToken.jwks.cacheDuration }}
+                                async_fetch:
+                                  failed_refetch_duration: 10s
+                                retry_policy:
+                                  num_retries: 3
+                                  retry_back_off: { base_interval: 0.5s, max_interval: 5s }
+                              payload_in_metadata: gateway_token
+                          rules:
+                            - match: { prefix: "/" }
+                              requires: { provider_name: gateway_token }
+                      - name: envoy.filters.http.rbac
+                        typed_config:
+                          "@type": type.googleapis.com/envoy.extensions.filters.http.rbac.v3.RBAC
+                          rules:
+                            action: ALLOW
+                            policies:
+                              allowed-clients:
+                                permissions: [{ any: true }]
+                                principals:
+                                  - and_ids:
+                                      ids:
+                                        - or_ids:
+                                            ids:
+                                              {{- range include "management-proxy.allowedClients" . | fromJsonArray }}
+                                              - sourced_metadata:
+                                                  metadata_matcher:
+                                                    filter: envoy.filters.http.jwt_authn
+                                                    path: [{ key: gateway_token }, { key: {{ $.Values.envoy.gatewayToken.clientClaim | toJson }} }]
+                                                    value: { string_match: { exact: {{ . | toJson }} } }
+                                              {{- end }}
+                                        # Bind the token to the management route of the gateway.
+                                        - sourced_metadata:
+                                            metadata_matcher:
+                                              filter: envoy.filters.http.jwt_authn
+                                              path: [{ key: gateway_token }, { key: requestPath }]
+                                              value: { string_match: { prefix: {{ printf "%s/" $prefix | toJson }} } }
+                                {{- if .Values.envoy.gatewayToken.requestBinding }}
+                                # request.method == operation && '{{ $prefix }}' + request.url_path == requestPath
+                                condition: {{ include "management-proxy.requestBindingCondition" . | fromJson | toJson }}
+                                cel_config:
+                                  enable_string_concat: true
+                                {{- end }}
+                      - name: envoy.filters.http.header_mutation
+                        typed_config:
+                          "@type": type.googleapis.com/envoy.extensions.filters.http.header_mutation.v3.HeaderMutation
+                          mutations:
+                            request_mutations:
+                              # The ServiceAccount has no impersonate permission. Remove the headers anyway.
+                              - remove_on_match:
+                                  key_matcher: { prefix: impersonate- }
+                      - name: envoy.filters.http.router
+                        typed_config:
+                          "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+        - name: health
+          address:
+            socket_address: { address: 0.0.0.0, port_value: {{ .Values.envoy.healthPort }} }
+          filter_chains:
+            - filters:
+                - name: envoy.filters.network.http_connection_manager
+                  typed_config:
+                    "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                    stat_prefix: health
+                    route_config:
+                      name: health
+                      virtual_hosts:
+                        - name: health
+                          domains: ["*"]
+                          routes:
+                            - match: { path: /stats/prometheus }
+                              route: { cluster: envoy-admin }
+                            - match: { prefix: "/" }
+                              direct_response: { status: 404 }
+                    http_filters:
+                      # /ready fails while kubectl proxy does not accept connections.
+                      - name: envoy.filters.http.health_check
+                        typed_config:
+                          "@type": type.googleapis.com/envoy.extensions.filters.http.health_check.v3.HealthCheck
+                          pass_through_mode: false
+                          headers:
+                            - name: ":path"
+                              string_match: { exact: /ready }
+                          cluster_min_healthy_percentages:
+                            kubectl-proxy: { value: 100 }
+                      - name: envoy.filters.http.router
+                        typed_config:
+                          "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+      clusters:
+        - name: kubectl-proxy
+          type: STATIC
+          connect_timeout: 1s
+          load_assignment:
+            cluster_name: kubectl-proxy
+            endpoints:
+              - lb_endpoints:
+                  - endpoint:
+                      address:
+                        socket_address: { address: 127.0.0.1, port_value: 8001 }
+          health_checks:
+            - timeout: 1s
+              interval: 5s
+              # The default of 60 seconds delays readiness when kubectl proxy starts after Envoy.
+              no_traffic_interval: 5s
+              unhealthy_threshold: 2
+              healthy_threshold: 1
+              tcp_health_check: {}
+        - name: jwks
+          type: STRICT_DNS
+          connect_timeout: 5s
+          dns_lookup_family: V4_PREFERRED
+          load_assignment:
+            cluster_name: jwks
+            endpoints:
+              - lb_endpoints:
+                  - endpoint:
+                      address:
+                        socket_address: { address: {{ $resolvedJwks.address | toJson }}, port_value: {{ $resolvedJwks.port }} }
+          transport_socket:
+            name: envoy.transport_sockets.tls
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+              sni: {{ $resolvedJwks.host | toJson }}
+              common_tls_context:
+                tls_params:
+                  tls_minimum_protocol_version: TLSv1_2
+                validation_context:
+                  trusted_ca:
+                    filename: {{ $resolvedJwks.caFile }}
+                  match_typed_subject_alt_names:
+                    - san_type: DNS
+                      matcher: { exact: {{ $resolvedJwks.host | toJson }} }
+        - name: envoy-admin
+          type: STATIC
+          connect_timeout: 1s
+          load_assignment:
+            cluster_name: envoy-admin
+            endpoints:
+              - lb_endpoints:
+                  - endpoint:
+                      address:
+                        socket_address: { address: 127.0.0.1, port_value: 9901 }
+  sds-server.yaml: |
+    resources:
+      - "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.Secret
+        name: server
+        tls_certificate:
+          certificate_chain: { filename: /etc/management-proxy/tls/tls.crt }
+          private_key: { filename: /etc/management-proxy/tls/tls.key }
+          watched_directory: { path: /etc/management-proxy/tls }
+  {{- if .Values.tls.clientCertificate.enabled }}
+  sds-client-ca.yaml: |
+    resources:
+      - "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.Secret
+        name: client-ca
+        validation_context:
+          trusted_ca: { filename: /etc/management-proxy/client-ca/ca.crt }
+          watched_directory: { path: /etc/management-proxy/client-ca }
+          match_typed_subject_alt_names:
+            - san_type: DNS
+              matcher: { exact: {{ include "management-proxy.clientDNSName" . | toJson }} }
+{{- end }}

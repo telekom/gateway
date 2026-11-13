@@ -1,0 +1,42 @@
+{{/*
+SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+
+SPDX-License-Identifier: Apache-2.0
+*/}}
+{{- $fullname := include "management-proxy.fullname" . }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ $fullname }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "management-proxy.labels" . | nindent 4 }}
+automountServiceAccountToken: false
+{{- range $namespace := include "management-proxy.rbacNamespaces" . | fromJsonArray }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ $fullname }}
+  namespace: {{ $namespace }}
+  labels:
+    {{- include "management-proxy.labels" $ | nindent 4 }}
+rules:
+  {{- toYaml $.Values.rbac.rules | nindent 2 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ $fullname }}
+  namespace: {{ $namespace }}
+  labels:
+    {{- include "management-proxy.labels" $ | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ $fullname }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ $fullname }}
+    namespace: {{ $.Release.Namespace }}
+{{- end }}

@@ -1,0 +1,80 @@
+# SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+#
+# SPDX-License-Identifier: Apache-2.0
+
+suite: NetworkPolicy
+templates:
+  - networkpolicy.yaml
+release:
+  name: test
+  namespace: management
+tests:
+  - it: allows ingress only from the gateway to the TLS port
+    values:
+      - ../ci/cert-manager-values.yaml
+    asserts:
+      - equal:
+          path: spec.ingress
+          value:
+            - from:
+                - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: gateway } }
+                  podSelector: { matchLabels: { gateway.networking.k8s.io/gateway-name: gateway } }
+              ports: [{ protocol: TCP, port: https }]
+
+  - it: allows ingress to the health port only from the metrics sources
+    values:
+      - ../ci/cert-manager-values.yaml
+    set:
+      networkPolicy.ingress.metricsFrom:
+        - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: monitoring } }
+    asserts:
+      - equal:
+          path: spec.ingress[1]
+          value:
+            from:
+              - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: monitoring } }
+            ports: [{ protocol: TCP, port: health }]
+
+  - it: allows no ingress when no sources are set
+    values:
+      - ../ci/existing-secrets-values.yaml
+    asserts:
+      - isNullOrEmpty:
+          path: spec.ingress
+
+  - it: allows egress only to the API server, DNS and the JWKS endpoint
+    values:
+      - ../ci/cert-manager-values.yaml
+    asserts:
+      - equal:
+          path: spec.policyTypes
+          value: [Ingress, Egress]
+      - equal:
+          path: spec.egress
+          value:
+            - to: [{ ipBlock: { cidr: 10.0.0.1/32 } }]
+              ports: [{ protocol: TCP, port: 443 }, { protocol: TCP, port: 6443 }]
+            - to:
+                - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: kube-system } }
+                  podSelector: { matchLabels: { k8s-app: kube-dns } }
+              ports: [{ protocol: UDP, port: 53 }, { protocol: TCP, port: 53 }]
+            - to: [{ namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: gateway } } }]
+              ports: [{ protocol: TCP, port: 8443 }]
+
+  - it: uses the port of the JWKS URI when no JWKS port is set
+    values:
+      - ../ci/cert-manager-mtls-values.yaml
+    asserts:
+      - equal:
+          path: spec.egress[2].ports
+          value: [{ protocol: TCP, port: 8443 }]
+
+  - it: has no egress rules when the egress policy is disabled
+    values:
+      - ../ci/existing-secrets-values.yaml
+    asserts:
+      - equal:
+          path: spec.policyTypes
+          value: [Ingress]
+      - notExists:
+          path: spec.egress

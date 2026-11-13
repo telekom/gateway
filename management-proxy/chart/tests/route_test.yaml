@@ -1,0 +1,86 @@
+# SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+#
+# SPDX-License-Identifier: Apache-2.0
+
+suite: management route
+templates:
+  - route.yaml
+release:
+  name: test
+  namespace: management
+tests:
+  - it: renders one expression for each issuer that checks the issuer and its clients together
+    values:
+      - ../ci/existing-secrets-values.yaml
+    documentSelector:
+      path: kind
+      value: TrafficPolicy
+    asserts:
+      - equal:
+          path: spec.rbac.policy.matchExpressions
+          value:
+            - >-
+              metadata.filter_metadata['envoy.filters.http.jwt_authn']['payload']['iss'] ==
+              "https://idp.example.com/realms/default" &&
+              metadata.filter_metadata['envoy.filters.http.jwt_authn']['payload']["clientId"] in
+              ["dcp-client","other-client"]
+            - >-
+              metadata.filter_metadata['envoy.filters.http.jwt_authn']['payload']['iss'] ==
+              "https://other-idp.example.com/realms/default" &&
+              metadata.filter_metadata['envoy.filters.http.jwt_authn']['payload']["azp"] in ["other-client"]
+
+  - it: removes the path prefix and forwards to the Service of the sidecar
+    values:
+      - ../ci/cert-manager-values.yaml
+    documentSelector:
+      path: kind
+      value: HTTPRoute
+    asserts:
+      - equal:
+          path: spec.rules[0]
+          value:
+            matches:
+              - path: { type: PathPrefix, value: /management }
+            filters:
+              - type: URLRewrite
+                urlRewrite:
+                  path: { type: ReplacePrefixMatch, replacePrefixMatch: / }
+            backendRefs:
+              - name: test-management-proxy
+                port: 8443
+
+  - it: verifies the sidecar with the CA Secret without mutual TLS
+    values:
+      - ../ci/existing-secrets-values.yaml
+    documentSelector:
+      path: kind
+      value: BackendConfigPolicy
+    asserts:
+      - equal:
+          path: spec.tls
+          value:
+            secretRef: { name: management-proxy-ca }
+            simpleTLS: true
+            sni: test-management-proxy.management.svc
+            verifySubjectAltNames: [test-management-proxy.management.svc]
+            parameters: { minVersion: "1.2" }
+
+  - it: presents the client certificate with mutual TLS
+    values:
+      - ../ci/cert-manager-mtls-values.yaml
+    documentSelector:
+      path: kind
+      value: BackendConfigPolicy
+    asserts:
+      - equal:
+          path: spec.tls.secretRef.name
+          value: test-management-proxy-client
+      - notExists:
+          path: spec.tls.simpleTLS
+
+  - it: renders no route resources when the route is disabled
+    values:
+      - ../ci/sidecar-values.yaml
+    asserts:
+      - hasDocuments:
+          count: 0

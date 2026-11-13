@@ -13,3 +13,28 @@ updates:
       github-actions:
         patterns:
           - "*"
+
+  # Envoy and kubectl images in management-proxy/chart/values.yaml
+  - package-ecosystem: docker
+    directory: /management-proxy/chart
+    schedule:
+      interval: weekly
+    ignore:
+      # kubectl must stay within one minor version of the API server. Change the minor version with the clusters.
+      - dependency-name: "*kubectl"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+
+  - package-ecosystem: gomod
+    directory: /management-proxy/test
+    schedule:
+      interval: weekly
+    groups:
+      management-proxy-test:
+        patterns:
+          - "*"
+
+  # The echo image of the sidecar test in management-proxy/test/echo.Dockerfile
+  - package-ecosystem: docker
+    directory: /management-proxy/test
+    schedule:
+      interval: weekly
