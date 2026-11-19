@@ -1,0 +1,70 @@
+{{/*
+SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+
+SPDX-License-Identifier: Apache-2.0
+*/}}
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "management-proxy.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "management-proxy.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "management-proxy.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+    {{- if .Values.networkPolicy.egress.enabled }}
+    - Egress
+    {{- end }}
+  ingress:
+    {{- with .Values.networkPolicy.ingress.from }}
+    - from:
+        {{- toYaml . | nindent 8 }}
+      ports:
+        - { protocol: TCP, port: https }
+    {{- end }}
+    {{- with .Values.networkPolicy.ingress.metricsFrom }}
+    - from:
+        {{- toYaml . | nindent 8 }}
+      ports:
+        - { protocol: TCP, port: health }
+    {{- end }}
+  {{- if .Values.networkPolicy.egress.enabled }}
+  {{- $apiServerCIDRs := include "management-proxy.requiredList" (dict
+        "value" .Values.networkPolicy.egress.apiServer.cidrs
+        "message" "networkPolicy.egress.apiServer.cidrs is required when the egress policy is enabled"
+      ) | fromJsonArray }}
+  {{- $jwksTo := include "management-proxy.requiredList" (dict
+        "value" .Values.networkPolicy.egress.jwks.to
+        "message" "networkPolicy.egress.jwks.to is required when the egress policy is enabled"
+      ) | fromJsonArray }}
+  {{- $jwksPorts := default (list (include "management-proxy.jwks" . | fromJson).port) .Values.networkPolicy.egress.jwks.ports }}
+  egress:
+    - to:
+        {{- range $apiServerCIDRs }}
+        - ipBlock:
+            cidr: {{ . }}
+        {{- end }}
+      ports:
+        {{- range .Values.networkPolicy.egress.apiServer.ports }}
+        - { protocol: TCP, port: {{ . }} }
+        {{- end }}
+    - to:
+        {{- toYaml .Values.networkPolicy.egress.dns.to | nindent 8 }}
+      ports:
+        {{- range .Values.networkPolicy.egress.dns.ports }}
+        - { protocol: UDP, port: {{ . }} }
+        - { protocol: TCP, port: {{ . }} }
+        {{- end }}
+    - to:
+        {{- toYaml $jwksTo | nindent 8 }}
+      ports:
+        {{- range $jwksPorts }}
+        - { protocol: TCP, port: {{ . }} }
+        {{- end }}
+  {{- end }}
+{{- end }}
