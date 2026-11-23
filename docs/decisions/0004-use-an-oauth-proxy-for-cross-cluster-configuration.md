@@ -55,9 +55,11 @@ The decision records and the [developer documentation](../developer/) use these 
 ## Decision Outcome
 
 Proposed option: **an OAuth-protected Kubernetes API proxy with central reconciliation**. Deploy one proxy endpoint for
-each data-plane cluster. The dCP translates the configuration one time. Then it uses a Kubernetes client through that
-endpoint. The proxy authenticates and authorizes the OAuth client. Then the proxy forwards the request with a local,
-namespace-scoped ServiceAccount. The proxy has no route model, no work queue and no reconciliation loop of its own.
+each data-plane cluster. For several zones in one data-plane cluster, see
+[ADR 0012](0012-configure-several-zones-in-one-cluster.md). The dCP translates the configuration one time. Then it uses
+a Kubernetes client through that endpoint. The proxy authenticates and authorizes the OAuth client. Then the proxy
+forwards the request with a local, namespace-scoped ServiceAccount. The proxy has no route model, no work queue and no
+reconciliation loop of its own.
 
 A custom route-operation API adds a route-specific contract, but no responsibility needs that contract. A data-plane
 controller adds a second layer of route reconciliation. The dCP owns and renders trusted configuration, so neither

@@ -328,7 +328,8 @@ platform.
 
 [`values.yaml`](../../management-proxy/chart/values.yaml) documents each value with a `# --` comment in the
 [helm-docs](https://github.com/norwoodj/helm-docs) format. The chart fails to render when a required value is missing.
-These values need a decision for each data-plane cluster:
+These values need a decision for each zone. When several zones share a cluster, also see
+[Configure several zones in one cluster](#configure-several-zones-in-one-cluster).
 
 | Value | Content |
 | --- | --- |
@@ -397,6 +398,56 @@ c, err := client.New(cfg, client.Options{Scheme: scheme}) // Gateway API v1 and 
   for both API groups.
 - The field `gw.Spec.Admin.Url` is an example. The Gateway resource of the dCP needs a field for the management
   endpoint.
+
+## Configure several zones in one cluster
+
+[ADR 0012](../decisions/0012-configure-several-zones-in-one-cluster.md) proposes one release of the chart for each zone,
+also when several zones share a data-plane cluster. The management proxy does not know zones. The dCP selects the zone,
+and Kubernetes RBAC limits each release to the namespaces of its zone. The ADR explains the options and the risks.
+
+### Values for each zone
+
+| Value | Content for each zone |
+| --- | --- |
+| Release name | Unique in the cluster, not only in its namespace. Include the zone, for example `zone-a`. The Roles in the target namespaces have this name. |
+| `envoy.gatewayToken.issuer`, `envoy.gatewayToken.jwks` | The Gateway Token issuer and the JWKS endpoint of the gateway of the zone. |
+| `envoy.gatewayToken.audiences` | The audience of the management route of the zone, once the gateway sets one. |
+| `route.parentRefs`, `route.hostnames` | The management listener of the Gateway of the zone. |
+| `route.jwtExtensionRef`, `route.extProcExtensionRef` | The GatewayExtensions of the zone. |
+| `route.issuers` | The realm of the zone, from which the dCP gets its token. |
+| `rbac.namespaces` | The namespaces of the zone. No overlap with another zone. Not the namespaces of the management proxy, the Gateway or the GatewayExtensions of another zone, and not the global policy namespace of kgateway. The chart checks only the namespaces of its own release. |
+| `networkPolicy.ingress.from` | The gateway pods of the zone: the namespace and the label `gateway.networking.k8s.io/gateway-name`. A namespace selector alone admits the gateways of all zones in that namespace. |
+| `networkPolicy.egress.jwks.to` | The JWKS endpoint of the zone. |
+| `deployment.topologySpreadConstraints` | If set, select the pods with `app.kubernetes.io/instance` too. Otherwise, the pods of all releases in the namespace spread together. |
+
+`allowedClients` and `pathPrefix` can be the same in all zones. `deployment.podLabels` must not set
+`app.kubernetes.io/name` or `app.kubernetes.io/instance`. These labels select the pods.
+
+The gateway chart must meet two prerequisites for each zone:
+
+- Each listener of the Gateway of a zone admits only routes from the namespaces of that zone. Otherwise, a route of one
+  zone can attach to the Gateway of another zone.
+- A NetworkPolicy on the token minter of each zone admits only the gateway pods of that zone. kgateway resolves
+  GatewayExtensions in other namespaces without a ReferenceGrant.
+
+### Create the resources of a zone with the dCP
+
+For each zone, the dCP:
+
+1. Calls the management endpoint of the zone with a token from the realm of the zone. It keeps one client and one watch
+   cache for each zone, also when two zones share a cluster.
+2. Writes the resources of the zone only into the namespaces of the zone. The Gateway resource of the dCP needs a field
+   for these namespaces, as for the management endpoint.
+3. Watches, lists and prunes only in the namespaces of the zone. The inventory audit of one zone then never sees or
+   deletes the resources of another zone.
+4. Sets the `parentRefs` of each HTTPRoute only to the Gateway of the zone. Sets each `extensionRef` of a TrafficPolicy
+   only to the GatewayExtensions of the zone.
+5. Derives the resource names from the Route and its environment, as in
+   [ADR 0004](../decisions/0004-use-an-oauth-proxy-for-cross-cluster-configuration.md#write-and-clean-up-target-resources-safely).
+   The namespaces separate the zones, so two zones can use the same names.
+
+The dCP uses the same client ID in all zones. RBAC of the release, not the client ID, keeps one zone out of the
+namespaces of another zone.
 
 ## Results of the proof of concept
 
