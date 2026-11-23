@@ -1,0 +1,28 @@
+docs/decisions/0004-use-an-oauth-proxy-for-cross-cluster-configuration.md
+  s_92dea793aa4a77::t_d070be907b8508 58-60
+  s_92dea793aa4a77::t_df5832f8a52246 61-62
+docs/decisions/0012-configure-several-zones-in-one-cluster.md
+  s_92dea793aa4a77::t_e71fe5d968e816 96-97
+  s_92dea793aa4a77::t_6b583b48945b74 1-95,98-300
+docs/developer/management-proxy.md
+  s_92dea793aa4a77::t_6f0c415ff86a77 331
+  s_92dea793aa4a77::t_f31c6bdc533b6f 426
+  s_92dea793aa4a77::t_5e7ba8d451a24e 402-425,427-451
+  s_92dea793aa4a77::t_19ee0fdf0160aa 332
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.7",
+  "base_commit_sha": "4f03cbbb0d5b3f3dc712ca0bfa119c53740daa16",
+  "prompts": {},
+  "sessions": {
+    "s_92dea793aa4a77": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_df7594fbaffeO1MRGIhMKx68CB",
+        "model": "github-copilot/claude-opus-5.5"
+      },
+      "human_author": "Niklas Beilmann <niklas.beilmann@telekom.de>"
+    }
+  }
+}
