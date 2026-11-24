@@ -1,0 +1,349 @@
+.github/dependabot.yml
+  h_052be7cb63ce69 17,26,35
+  s_9aa5fdce904e0e::t_38a992970c7b40 18-25,36-40
+  s_3c463061b052fa::t_15753ca2c9dbfe 16,27-34
+management-proxy/chart/ci/existing-secrets-values.yaml
+  s_3c463061b052fa::t_f173c0b8c82d8e 1-4,7,14-16,20-36
+  s_3c463061b052fa::t_1b38b18b0fc3dc 5-6
+  s_149fd20b0f6ccd::t_89793dca9fe3c7 8-13,17-19
+management-proxy/Makefile
+  s_3c463061b052fa::t_8319b0559f70fe 21,24,26,35,39-40
+  s_3c463061b052fa::t_b1153f9d858760 1-20,22-23,28,36-38
+  s_3c463061b052fa::t_2e8b01e1fd908b 25,27,29-34
+docs/developer/management-proxy.md
+  s_3c463061b052fa::t_4edbdb3b1e6243 252-255
+  s_3c463061b052fa::t_a0840d15420132 373,375-376
+  s_3c463061b052fa::t_d6ff4d4097ec60 513-514
+  s_3c463061b052fa::t_d4a5f81eabbec3 331
+  s_3c463061b052fa::t_1b6d704d664520 463-464,466-467,482
+  s_3c463061b052fa::t_de87a7fc1e44cf 127-155,163-164,175-179,181-183
+  s_9aa5fdce904e0e::t_38a992970c7b40 450,465,468-481,515
+  s_3c463061b052fa::t_68ee8f99bad927 187-188
+  s_3c463061b052fa::t_2be5020ca2ca8d 427-444,446-449,453
+  h_052be7cb63ce69 208
+  s_3c463061b052fa::t_f31fcb11c66254 102,104-107,109-124
+  s_9aa5fdce904e0e::t_b10948ae316a32 125-126,156,234,256,329-330
+  s_3c463061b052fa::t_71c140cee46248 184
+  s_3c463061b052fa::t_30b3ddda6f91d3 327-328,332-335,344-347,362-369,378
+  s_3c463061b052fa::t_4d6a1fc4e97adc 157-162
+  s_3c463061b052fa::t_b56a1884c46888 5-6,10
+  s_3c463061b052fa::t_1328caab95d450 271,273-276,280,283-286,316-318,341-343,355-359,370-371,374,377
+  s_3c463061b052fa::t_b7984ac501ce08 65-68
+  s_3c463061b052fa::t_b422d4828a11d9 404-406
+  s_3c463061b052fa::t_0d7ef03ac107a1 77-81,85-86,89-90,92-93
+  s_3c463061b052fa::t_b835b5b668d07a 456-458
+  s_3c463061b052fa::t_3afa7d78748eda 235-251,257-259
+  s_3c463061b052fa::t_72cef5c05a7a12 372
+  s_3c463061b052fa::t_50fa4de99dd5d3 185-186
+  s_3c463061b052fa::t_64d05f970a4640 445,451-452
+  s_149fd20b0f6ccd::t_f1ba3b9597f989 348-354
+  s_3c463061b052fa::t_3f2681c844a69d 360-361
+  s_9aa5fdce904e0e::t_22489447346502 516-517
+  s_cb1af8935eac7d::t_fad1346e6816fd 95-100,173-174,336-340
+  s_3c463061b052fa::t_1f44b62f21b9a8 221-223
+  s_3c463061b052fa::t_3b238111e4bc22 45
+AGENTS.md
+  s_3c463061b052fa::t_e0244f4168a8ed 30-31
+  h_052be7cb63ce69 22-23
+management-proxy/test/kubectl_proxy_test.go
+  s_3c463061b052fa::t_003661e7e24240 1-73
+management-proxy/chart/ci/cert-manager-values.yaml
+  s_3c463061b052fa::t_f173c0b8c82d8e 1-7,15-52
+  s_149fd20b0f6ccd::t_89793dca9fe3c7 8-14
+management-proxy/test/sidecar_test.go
+  s_3c463061b052fa::t_d487738acac042 99
+  s_4b37312a369993::t_84a23d1a3444f2 267,278-285,339-340
+  s_3c463061b052fa::t_da9418d76e3473 1-8,10-12,14-15,17-21,23-47,58-62,70,72-75,88,96,98,103,105,107-108,138,241-256,258-265,268-269,271-276,286-305,314,317-324,329-338,341-354,365-371,374-375,378-383,387,392-395,397-399,404-405,408,412-413,415-416,418-437,441-443,447-448,481,491,501-502,504-519,525-539
+  s_9aa5fdce904e0e::t_aa58fc511be3ad 316
+  s_9aa5fdce904e0e::t_38a992970c7b40 9,16,520-521
+  s_9e91d1b7bbc256::t_f3fe60e07b3c12 82
+  s_3c463061b052fa::t_f831b171c5c562 48-57,63-69,71,100-101,186,212,257,270,277,306-313,325-328,355-364,372-373,376-377,384-386,388-391,396,400-403,406-407,409-411,414,417,444-446
+  h_052be7cb63ce69 76-80,87,89-91,266,438-440,522-524
+  s_3c463061b052fa::t_71474968cf707a 97
+  s_9e91d1b7bbc256::t_d92ec1bd9ff335 81,102,104,106,109-137,139-185,187-211,213-240
+  s_9e91d1b7bbc256::t_a163ffe53687ce 83-86,92-95,450-467
+  s_9aa5fdce904e0e::t_a45634eea4c492 13,483-490,492-500,503
+  s_3c463061b052fa::t_6852c2831749ce 22,315,468,470-480
+  s_9aa5fdce904e0e::t_a28417d88286ff 469
+  s_9e91d1b7bbc256::t_28f3d6f1d445da 449,482
+REUSE.toml
+  s_3c463061b052fa::t_15753ca2c9dbfe 16-20
+management-proxy/chart/tests/networkpolicy_test.yaml
+  s_3c463061b052fa::t_b4a9ed10e79832 1-11,45-52,54,63-71,90-98
+  s_c6210a6758b05e::t_cf718c34c4f58c 72-89
+  s_3c463061b052fa::t_2d5098633fc9a4 12-44,53,55-62
+management-proxy/chart/tests/pdb_test.yaml
+  h_052be7cb63ce69 1-22
+management-proxy/chart/templates/service.yaml
+  s_3c463061b052fa::t_5a7d537a34316d 1-20
+docs/decisions/0011-test-components-with-helm-unittest-and-testcontainers.md
+  s_9aa5fdce904e0e::t_38a992970c7b40 1-62
+management-proxy/chart/ci/sidecar-values.yaml
+  s_3c463061b052fa::t_f173c0b8c82d8e 1-6,15-17,20-29
+  s_3c463061b052fa::t_003661e7e24240 7
+  s_149fd20b0f6ccd::t_89793dca9fe3c7 8-14,18-19
+management-proxy/chart/tests/rbac_test.yaml
+  s_66df16076e14df::t_f2e51af77b84b3 14,17-23
+  s_c6210a6758b05e::t_52dc8da1926155 54-56,61-69
+  s_9aa5fdce904e0e::t_38a992970c7b40 29,35,37,39-41
+  s_3c463061b052fa::t_5195a095fd3545 1-13,15-16,24-28,30-34,36,38,42-48
+  s_c6210a6758b05e::t_e25a58a0b08f44 49-53,57-60
+management-proxy/chart/templates/_helpers.tpl
+  s_149fd20b0f6ccd::t_25e59963e72af2 7-8,45-63,66-75,88,110-112,119-123,126,133-137,149-150,152,164-165,202-205,216-245,253-289,294-306,308-309,311-313,316-317,320-325,329-336
+  s_3c463061b052fa::t_57a2b0c8f6c6c0 157-163,166
+  s_149fd20b0f6ccd::t_89793dca9fe3c7 83,89,189
+  s_3c463061b052fa::t_a43b242fac5cbe 103
+  s_c6210a6758b05e::t_68527596ef4cd1 168-179
+  s_3c463061b052fa::t_01f08d0eb525af 155-156
+  s_149fd20b0f6ccd::t_257888ed26d6b8 290-293
+  s_3c463061b052fa::t_41b939c68fd7e7 188,195
+  s_3c463061b052fa::t_1146b0f5bb334d 1-6,10-13,15-27,29-33,35-41,43-44,64-65,77,81-82,84-86,93,97-98,100-102,104,106-107,109,113-114,116-118,124-125,167,184-185,187,190,198,208-215,246-252,337
+  s_3c463061b052fa::t_5f65db49a54a1e 90-91,99,105
+  s_149fd20b0f6ccd::t_88b1e357bea560 128-129,131-132,147-148,151
+  s_149fd20b0f6ccd::t_a3dfca49a7631a 78-80,94-96,186,199-201,206,314-315,318-319
+  s_c6210a6758b05e::t_7a480008b39b6e 138-140
+  s_3977bc1bf23e1d::t_997e740e38afbf 182-183,191-194,196-197
+  s_3c463061b052fa::t_1d416966cc9b64 87
+  s_9aa5fdce904e0e::t_38a992970c7b40 9,14,28,34,42,76,92,108,115,153-154,180-181,207
+  s_3c463061b052fa::t_094994d71e2881 127
+  s_c6210a6758b05e::t_0b26b3c3922edc 307,310,326-328
+  s_3c463061b052fa::t_ecc3fd52602aed 130,141-146
+CONTRIBUTING.md
+  s_3c463061b052fa::t_72cef5c05a7a12 20-21,34-35
+  s_3c463061b052fa::t_056302b53fbab5 23,25-26
+  s_9aa5fdce904e0e::t_0ff43f3e1b263f 19,36
+  s_3c463061b052fa::t_e0244f4168a8ed 18,22,24,27-28
+management-proxy/test/echo.Dockerfile
+  s_9aa5fdce904e0e::t_65484631cc9441 7
+  s_3c463061b052fa::t_6852c2831749ce 1-6
+Makefile
+  s_3c463061b052fa::t_cda95bcfd34367 38,40
+  s_3c463061b052fa::t_e0244f4168a8ed 21-24,34-37,39
+  s_9aa5fdce904e0e::t_80f562ca1e446c 41
+management-proxy/chart/templates/deployment.yaml
+  s_3c463061b052fa::t_c6956c4c1faa1b 155
+  s_3c463061b052fa::t_4f3471d73eb2f2 1-14,16-22,24-27,29-35,41,44-45,47-60,64-69,71-85,87-88,91-94,96-98,100,102-111,113-119,121-123,126-135,137-147,149-154,157-172,174-182,184-186,188-190,192-195,198-205
+  s_c6210a6758b05e::t_2f98b77aab649d 36-38
+  s_3c463061b052fa::t_dd7eb0593561f3 39-40
+  s_149fd20b0f6ccd::t_a3dfca49a7631a 15,23,28,42-43,46,61-62,86,89-90,95,99,101,112,120,125,136,148,156,173,183,187,191,196-197
+  s_3c463061b052fa::t_9e66626d176f8b 124
+  s_3c463061b052fa::t_094994d71e2881 70
+  h_052be7cb63ce69 63
+management-proxy/chart/templates/rbac.yaml
+  s_66df16076e14df::t_b9ace48597c7aa 7-14
+  s_c6210a6758b05e::t_0b26b3c3922edc 21,31
+  s_9aa5fdce904e0e::t_38a992970c7b40 15
+  s_3c463061b052fa::t_8173a93e0e91d6 1-6,16-20,22-30,32-42
+docs/decisions/0005-reuse-an-existing-kubernetes-api-proxy.md
+  s_3c463061b052fa::t_1328caab95d450 110,133-134,222-224
+  s_3c463061b052fa::t_c781b69a343ac6 135-140
+  s_9aa5fdce904e0e::t_546277e44248be 141
+  s_3c463061b052fa::t_2620a8066211c8 142-164
+  s_3c463061b052fa::t_08f0bb869d7b7e 90
+README.md
+  s_3c463061b052fa::t_0ddec74db9ffe9 23-24
+management-proxy/chart/.helmignore
+  s_3c463061b052fa::t_0f938858fec90e 1-11
+  s_3c463061b052fa::t_f173c0b8c82d8e 12-14
+management-proxy/test/go.sum
+  s_9aa5fdce904e0e::t_3d086ebc58adde 1-127
+management-proxy/chart/tests/envoy-config_test.yaml
+  s_3c463061b052fa::t_4369e479d83a54 1-41
+management-proxy/chart/Chart.yaml
+  s_3c463061b052fa::t_52425c817f573d 1-20
+management-proxy/chart/tests/certificates_test.yaml
+  s_3c463061b052fa::t_88fab30e048199 1-51
+management-proxy/chart/values.yaml
+  s_c6210a6758b05e::t_096c17f24b5f30 97
+  h_052be7cb63ce69 201
+  s_c6210a6758b05e::t_e17f8ed15284ef 356
+  s_3977bc1bf23e1d::t_9a0acbdd0b37cd 239-242
+  s_149fd20b0f6ccd::t_89793dca9fe3c7 5,10-11,14,16,18,21,23-25,30,49-55,61,70-75,80,83,87,91-96,98,112,115,119,124-126,134-136,162,165-166,169-170,172-174,182-183,206-207,214-219,222,228,231,234,236-237,244,246-250,252,255,257-259,262,265-266,269,279-281,289,298-299,312,315-319,321-325,329-330,332-333,337,344,347,353-355,357,360,363,365,368,377,391,402-403,408,410,413-414,419,423-425,481-482,507-508,516-517
+  s_3977bc1bf23e1d::t_180ee0815d9f9b 264
+  s_149fd20b0f6ccd::t_4634d7b31ca1d0 8-9,13,15,17,19-20,22,26-29,36-37,41-48,56-59,62-69,76-79,81-82,84-86,88-90,99-111,113-114,116-118,121-123,130-131,138-139,141-142,144-145,147-148,151-157,159-160,163-164,167-168,171,175-176,179,181,185-186,188-190,192,197-200,204-205,212-213,220-221,223,225,229-230,232-233,235,238,243,245,251,253-254,256,261,263,268,271-278,283-284,286-287,290-293,296-297,304-305,313-314,320,326-328,331,334-336,338-343,345-346,348-352,358-359,361-362,364,366-367,369-376,378-390,392-401,404-406,409,411-412,416-418,421-422,427-432,441-444,447,450-451,453-454,456-466,468-472,474-475,477,479,485-490,492,494,502-503,505,510-515
+  s_3c463061b052fa::t_0fe0af4c3ab2a1 178,180,187,191,195
+  s_9aa5fdce904e0e::t_38a992970c7b40 12,31-33,38,120,128,132,177,184,193-194,210,226,302,407,445,449,473,483
+  s_3c463061b052fa::t_4e33c7daffd9a7 1-4,34-35,39-40,127,129,133,137,140,143,146,149,158,161,196,202-203,208-209,211,224,227,282,285,288,294-295,300-301,303,306-311,415,420,426,433-440,446,448,452,455,467,476,478,480,484,491,493,495-501,504,506,509,518
+  s_149fd20b0f6ccd::t_9b5e96896f0149 60
+  s_149fd20b0f6ccd::t_9a3ad750c3a656 6-7,150,260,267,270
+management-proxy/test/helpers_test.go
+  s_3c463061b052fa::t_854a3377054291 1-45,47-57,65-85,87-88,91,93-102,109-111,113-117,121-134,177-324
+  s_3c463061b052fa::t_003661e7e24240 89-90,92,103-108,112
+  h_052be7cb63ce69 135
+  s_4b37312a369993::t_84a23d1a3444f2 46,58-64
+  s_3977bc1bf23e1d::t_b18ce58c6f8b29 118-120
+  s_3977bc1bf23e1d::t_55520a4c4d3e94 136-176
+  s_9aa5fdce904e0e::t_38a992970c7b40 86
+management-proxy/README.md
+  s_3c463061b052fa::t_ef301e7af4f623 45
+  s_3c463061b052fa::t_feed644089bd1a 1-3,5-14,16-20,24,30-37,40-44,46
+  s_9aa5fdce904e0e::t_38a992970c7b40 4,26,38-39
+  s_3c463061b052fa::t_72cef5c05a7a12 21-23,27,29
+  s_3c463061b052fa::t_056302b53fbab5 25
+  s_3c463061b052fa::t_d584324ca9832a 28
+  h_052be7cb63ce69 15
+.github/workflows/management-proxy.yml
+  s_3c463061b052fa::t_a0840d15420132 25
+  s_3c463061b052fa::t_15753ca2c9dbfe 36-44,62,66
+  s_3c463061b052fa::t_ff5648b5360803 1-24,26-35,63-65,67
+  s_3c463061b052fa::t_e0244f4168a8ed 45-61
+management-proxy/.kube-linter.yaml
+  s_3c463061b052fa::t_a794fe9df44b87 1-9
+management-proxy/chart/tests/deployment_test.yaml
+  s_3977bc1bf23e1d::t_ed3a8ccf2a0d4e 26
+  s_9aa5fdce904e0e::t_38a992970c7b40 69,92-111
+  s_3c463061b052fa::t_1638291bad6b70 1-25,27-68,70-91
+management-proxy/chart/tests/route_test.yaml
+  s_3c463061b052fa::t_e5acb399200e8e 1-86
+management-proxy/test/envoy_test.go
+  s_3977bc1bf23e1d::t_2af0e8355d1eed 31
+  s_3c463061b052fa::t_3192aee4d4add9 1-30,32-50
+management-proxy/chart/templates/pdb.yaml
+  s_66df16076e14df::t_b9ace48597c7aa 1-20
+management-proxy/test/go.mod
+  s_9aa5fdce904e0e::t_38a992970c7b40 10-17
+  s_3c463061b052fa::t_8319b0559f70fe 1-4
+  s_3c463061b052fa::t_af5363c0bd8eb1 5-9,18-63
+management-proxy/chart/templates/certificates.yaml
+  s_149fd20b0f6ccd::t_a3dfca49a7631a 18-20,23-24,45-47,50-51
+  s_9aa5fdce904e0e::t_38a992970c7b40 32,59
+  s_3c463061b052fa::t_89ceaee9c81966 1-17,21-22,25-31,33-44,48-49,52-58,60
+management-proxy/chart/ci/cert-manager-mtls-values.yaml
+  s_3c463061b052fa::t_f173c0b8c82d8e 1-6,13-41
+  s_149fd20b0f6ccd::t_89793dca9fe3c7 7-12
+management-proxy/chart/templates/route.yaml
+  s_9aa5fdce904e0e::t_38a992970c7b40 61,82,85-87,89-90
+  s_149fd20b0f6ccd::t_a3dfca49a7631a 17-18,35,52,55,66,81
+  s_3c463061b052fa::t_ecc3fd52602aed 59,62-63
+  s_149fd20b0f6ccd::t_70122f69d85e0d 88
+  s_3c463061b052fa::t_812e2f3e0a18e4 1-16,19-34,36-51,53-54,56-58,60,64-65,67-80,83-84,91-97
+management-proxy/test/validate-schemas.sh
+  h_052be7cb63ce69 19
+  s_3c463061b052fa::t_26e334337a0f9f 1-5,12,14-15,20-25,27-29,31-35,37-42,45-46,51-64,67-68,72,75-77,80-81,83-84,86-88
+  s_3c463061b052fa::t_d773e027d73a48 6-11,13,16-18,26,30,36,43-44,47-50,65-66,69-71,73-74,78-79,82,85
+management-proxy/chart/tests/refused-values_test.yaml
+  s_c6210a6758b05e::t_20b4360948e075 229-250
+  s_c6210a6758b05e::t_59c0752504f7ea 63
+  h_052be7cb63ce69 40,66-67,117
+  s_3977bc1bf23e1d::t_a8ae3bf42ded9a 19-38
+  s_c6210a6758b05e::t_afdbaddde92c3a 118-131
+  s_c6210a6758b05e::t_04d9ab5fd2c1e5 56
+  s_c6210a6758b05e::t_1ea00941d3f829 52-54
+  s_9aa5fdce904e0e::t_38a992970c7b40 192-194,196-197,199-228
+  s_c6210a6758b05e::t_ebde2a9e956fa2 41,43-44,48,50-51,55,57-58,62,64-65,251-271
+  s_3c463061b052fa::t_f96de7afa24690 1-13,15-16,18,68-74,82-116,149-169,184-186,188-191
+  s_149fd20b0f6ccd::t_89793dca9fe3c7 14,17,187,195,198
+  s_c6210a6758b05e::t_2a78e7779ee17c 45-47
+  s_c6210a6758b05e::t_d0c753ed35351c 42
+  s_c6210a6758b05e::t_01c801002178c6 49
+  s_c6210a6758b05e::t_b5caac0593acc2 59-61
+  s_3c463061b052fa::t_094994d71e2881 75-81
+  s_c6210a6758b05e::t_46b0d6bf5feb78 132-139
+  s_3977bc1bf23e1d::t_f2cf7d7821206a 39
+  s_c6210a6758b05e::t_a87eb0d22340a2 140-148
+  s_c6210a6758b05e::t_9fac51560dd3c3 170-183
+management-proxy/chart/templates/configmap-envoy.yaml
+  s_3c463061b052fa::t_f83d98d1b16068 66
+  s_3977bc1bf23e1d::t_7d23e6b2ff074e 300-311
+  s_3977bc1bf23e1d::t_8ab93763caae0a 146-147
+  s_3c463061b052fa::t_af9d1eb30eb50e 1-6,8-19,24-31,33-36,38-42,44-60,62-65,67-72,74-90,92-114,116-126,129-136,138-139,141-145,148-168,170-177,179-196,198-241,244-256,258-261,263-265,270-287,289-298
+  s_149fd20b0f6ccd::t_a3dfca49a7631a 7,32,37,43,61,73,91,115,127-128,137,140,169,178,197,257,262,288
+  s_3c463061b052fa::t_efd19ac455bca5 242-243
+  s_3977bc1bf23e1d::t_5a265419a356e4 266-269
+  s_9aa5fdce904e0e::t_38a992970c7b40 299
+  s_3c463061b052fa::t_af019ed8259620 20-23
+management-proxy/chart/templates/networkpolicy.yaml
+  s_149fd20b0f6ccd::t_88b1e357bea560 37,39-40,53,55-56,62,79,81
+  s_c6210a6758b05e::t_c1395eb6c92767 74
+  s_c6210a6758b05e::t_da68de981a4647 68
+  s_3c463061b052fa::t_70c90d29a6c232 1-19,21-23,25-29,31-35,60-61,63-66,69-70,72,77-78,80,83-85
+  s_c6210a6758b05e::t_31e865c2ca5b80 82
+  s_c6210a6758b05e::t_f7ddbe54deace3 58-59
+  s_c6210a6758b05e::t_0b26b3c3922edc 41-52,67,71,73,75-76
+  s_149fd20b0f6ccd::t_a3dfca49a7631a 20,24,30,36,38,54,57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.7",
+  "base_commit_sha": "8fb44f9a72e920a158dac7215be08ad088c333b1",
+  "prompts": {},
+  "humans": {
+    "h_052be7cb63ce69": {
+      "author": "Niklas Beilmann <niklas.beilmann@telekom.de>"
+    }
+  },
+  "sessions": {
+    "s_149fd20b0f6ccd": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e30afe3faffeNaTJaF5UoQJMYl",
+        "model": "github-copilot/gpt-6-astra-long"
+      },
+      "human_author": null
+    },
+    "s_3977bc1bf23e1d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e0cc44d96ffeM73U0Hv2F3UKlp",
+        "model": "github-copilot/claude-opus-5.5-long"
+      },
+      "human_author": null
+    },
+    "s_3c463061b052fa": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e545d0c83ffem5pTSoKpbup0EX",
+        "model": "github-copilot/claude-opus-5.5-long"
+      },
+      "human_author": null
+    },
+    "s_4b37312a369993": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e2afb884bffeQcw48DBFAtuvQr",
+        "model": "github-copilot/gpt-6-astra-long"
+      },
+      "human_author": null
+    },
+    "s_66df16076e14df": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "9ae52ab3-bdca-42e6-b042-355d536fcdfd",
+        "model": "unknown"
+      },
+      "human_author": null
+    },
+    "s_9aa5fdce904e0e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e2a4f5750ffeqZs4bxm5TN6sOo",
+        "model": "github-copilot/claude-opus-5.5-long"
+      },
+      "human_author": null
+    },
+    "s_9e91d1b7bbc256": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "3a9aedc2-edb2-4894-9e0d-7da411521683",
+        "model": "unknown"
+      },
+      "human_author": null
+    },
+    "s_c6210a6758b05e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_df75aa567ffe8C0tIX9VAM0OSE",
+        "model": "github-copilot/claude-opus-5.5"
+      },
+      "human_author": null
+    },
+    "s_cb1af8935eac7d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e2afb87a6ffe84UuWWrBO1LfID",
+        "model": "github-copilot/gpt-6-astra-long"
+      },
+      "human_author": null
+    }
+  }
+}
