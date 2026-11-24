@@ -1,0 +1,52 @@
+# SPDX-FileCopyrightText: 2026 Deutsche Telekom AG
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# Value profile: the default setup with cert-manager, TLS without a client certificate and the
+# management route.
+allowedClients: [dcp-client]
+envoy:
+  gatewayToken:
+    issuer: https://gateway.example.com/auth/realms/default
+    audiences: [management-proxy]
+    jwks:
+      uri: https://gateway.example.com/auth/realms/default/protocol/openid-connect/certs
+      address: gateway-proxy.gateway.svc.cluster.local
+tls:
+  certManager:
+    issuerRef:
+      name: gateway-ca
+rbac:
+  namespaces: [gateway-routes]
+networkPolicy:
+  ingress:
+    from:
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: gateway
+        podSelector:
+          matchLabels:
+            gateway.networking.k8s.io/gateway-name: gateway
+  egress:
+    apiServer:
+      cidrs: [10.0.0.1/32]
+    jwks:
+      to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: gateway
+      ports: [8443]
+route:
+  parentRefs:
+    - name: gateway
+      namespace: gateway
+      sectionName: https
+  hostnames: [gateway.example.com]
+  jwtExtensionRef:
+    name: caller-jwt
+    namespace: gateway
+  extProcExtensionRef:
+    name: gateway-token
+    namespace: gateway
+  issuers:
+    - issuer: https://idp.example.com/auth/realms/default
